@@ -29,3 +29,8 @@ Wrong content type:
 
 ```curl -H "Content-Type: text/plain" --data "this is raw data" -X POST http://127.0.0.1:5000/provider```  
 ```curl -H "Content-Type: text/plain" --data "this is raw data" -X PUT http://127.0.0.1:5000/provider/420```
+
+Null values?  
+
+```curl -H "Content-Type: application/json" -d '{"name":null}' -X POST http://127.0.0.1:5000/provider```  
+```curl -H "Content-Type: application/json" -d '{"name":null}' -X PUT http://127.0.0.1:5000/provider/420```
