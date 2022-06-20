@@ -1,10 +1,4 @@
-*Dockerfile
+test with curl:
 
-*docker-compose
-
-*test in "tests" folder
-
-The work flow will be that the "Develop" branch will be the master and the teams will pull and and push with him.
-
-from there the Devops team push to the real master "main".
-Do not push to ----main----, we dont heve protection on it yet, still feguring it out. use git push origin <your branch name>
+curl -H "Content-Type: application/json" -d '{"name":"roy"}' -X POST http://127.0.0.1:5000/provider
+curl -H "Content-Type: application/json" -d '{"name":"roy"}' -X PUT http://127.0.0.1:5000/provider/420
