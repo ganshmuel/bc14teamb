@@ -41,8 +41,4 @@ def provider(name):
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     app.run(host="0.0.0.0", port=5000, debug=False)
-=======
-    app.run(host="0.0.0.0", port=3000, debug=True)
->>>>>>> e4a19cee4f59078d047ae4e59beeb1bf1b2849d2
