@@ -19,3 +19,13 @@ Empty name:
 
 ```curl -H "Content-Type: application/json" -d '{"name":""}' -X POST http://127.0.0.1:5000/provider```  
 ```curl -H "Content-Type: application/json" -d '{"name":""}' -X PUT http://127.0.0.1:5000/provider/420```
+
+Wrong request type:  
+
+```curl -H "Content-Type: application/json" -d '{"name":""}' -X DELETE http://127.0.0.1:5000/provider```  
+```curl -H "Content-Type: application/json" -d '{"name":""}' -X DELETE http://127.0.0.1:5000/provider/420```
+
+Wrong content type:  
+
+```curl -H "Content-Type: text/xml" -d '{"name":""}' -X DELETE http://127.0.0.1:5000/provider```  
+```curl -H "Content-Type: text/xml" -d '{"name":""}' -X DELETE http://127.0.0.1:5000/provider/420```
