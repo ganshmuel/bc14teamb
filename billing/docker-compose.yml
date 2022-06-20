@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  app:
+    build: ./app
+    links:
+      - db
+    ports:
+      - "5000:5000"
+  db:
+    image: mysql:8-oracle
+    ports:
+      - "32000:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: billdb
+      MYSQL_USER: billdb_owner
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/
