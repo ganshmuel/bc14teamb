@@ -22,8 +22,9 @@ RUN python3 -m pip install --upgrade pip setuptools wheel
 # Install any needed packages specified in requirements.txt
 
 COPY requirements.txt /app/requirements.txt
+# RUN apk add build-base
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py /app
-
-ENTRYPOINT [ "python", "-m", "flask", "run" ]
+# "-m", "flask", "run"
+ENTRYPOINT [ "python3", "app.py" ]
