@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://billdb_app:CYuoYBprY4so@database-1.c62tpaoqyddb.us-east-1.rds.amazonaws.com:3621/billdb"
-app.config["SERVER_NAME"] = "0.0.0.0"
+# app.config["SERVER_NAME"] = "0.0.0.0"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
@@ -13,6 +13,7 @@ class Provider(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     providerName = db.Column(db.String(255), unique=True, nullable=False)
 
+#Routes Section
 def createProvider(name: str):
     if name is None or name == "":
         isProviderExist = Provider.query.filter_by(providerName=name).first()
