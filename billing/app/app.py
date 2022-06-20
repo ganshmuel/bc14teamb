@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3https://github.com/ganshmuel/bc14teamb/blob/billing_rest_imp/billing/app/app.py
 
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
@@ -26,7 +26,6 @@ class ProviderPost(Resource):
 
 class ProviderPut(Resource):
     def put(self, provider_id):
-        args = parser.parse_args()
         args = parser.parse_args()
         name = {'name': args['name']}
         return name
