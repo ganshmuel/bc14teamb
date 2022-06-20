@@ -8,11 +8,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://billdb_app:CYuoYBprY4so
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
+
 class Provider(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     providerName = db.Column(db.String(255), unique=True, nullable=False)
 
-#Routes Section
+
+# Routes Section
 def createProvider(name: str):
     if name is None or name == "":
         isProviderExist = Provider.query.filter_by(providerName=name).first()
@@ -26,14 +28,21 @@ def createProvider(name: str):
     else:
         return Response('400 Bad Request: Please pass a valid provider name!', status=400, mimetype='text')
 
+
 @app.route("/health", methods=["GET"])
 def health():
     return Response('OK', status=200, mimetype='text')
+
 
 @app.route("/provider/<name>", methods=["POST"])
 def provider(name):
     dbRes = createProvider(name)
     return dbRes
 
+
 if __name__ == "__main__":
+<<<<<<< HEAD
     app.run(host="0.0.0.0", port=5000, debug=False)
+=======
+    app.run(host="0.0.0.0", port=3000, debug=True)
+>>>>>>> e4a19cee4f59078d047ae4e59beeb1bf1b2849d2

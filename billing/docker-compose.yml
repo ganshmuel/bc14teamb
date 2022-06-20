@@ -2,12 +2,14 @@ version: "3.7"
 
 services:
   app:
+    platform: linux/amd64
     build: ./app
     links:
       - db
     ports:
       - "5000:5000"
   db:
+    platform: linux/amd64
     image: mysql:8-oracle
     ports:
       - "32000:3306"
