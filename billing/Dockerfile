@@ -5,9 +5,8 @@ ENV FLASK_ENV=development
 
 # The EXPOSE instruction indicates the ports on which a container 
 # will listen for connections
-# Since Flask apps listen to port 5000  by default, we expose it
 
-EXPOSE 8081
+EXPOSE 8080
 
 # Sets the working directory for following COPY and CMD instructions
 # Notice we haven’t created a directory by this name - this instruction 
@@ -21,10 +20,10 @@ RUN python3 -m pip install --upgrade pip setuptools wheel
 
 # Install any needed packages specified in requirements.txt
 
-COPY requirements.txt /app/requirements.txt
+COPY ./app/requirements.txt /app/requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY app.py /app
+COPY ./app/app.py /app/app.py
 
 ENTRYPOINT [ "python3", "app.py" ]
