@@ -1,8 +1,7 @@
+import sqlite3 as sql
+from flask import Flask, render_template, Response, jsonify
 from typing import List, Dict
-from flask import Flask,render_template, redirect, url_for, request, Response
 import mysql.connector
-import json
-import datetime
 
 app = Flask(__name__)
 
@@ -13,41 +12,51 @@ def favorite_colors() -> List[Dict]:
         'password': 'root',
         'host': 'db',
         'port': '3306',
-        'database': 'Weights'
+        'database': 'Weight'
     }
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM Weights')
+    cursor.execute('SELECT * FROM favorite_colors')
     results = [{name: color} for (name, color) in cursor]
     cursor.close()
     connection.close()
 
     return results
 
-@app.route ('/weight')
-def get_weight():
-    frm = request.args.get('from')
-    to = request.args.get('to')
-    filter = request.args.get('filter')
-    if frm == None:
-        frm = datetime.datetime.now().strftime("%Y%m%d000000")
-    if to == None:
-        to = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    if filter == None:
-        filter = "in,out,none"
-#    cur = mysql.connection.cursor()
-#    cur.execute("""SELECT * FROM student_data WHERE id = %s""", (id,))
-    return f"from{frm}to{to}filter{filter}"
+mydb = mysql.connector.connect(  # db configuration
+        host="db",
+        user="root",
+        password="root",
+        database="weight"
+    )
+
+def add_data(title, content):
     
-@app.route ('/weight',methods=['POST'])
-def post_weight():
-    date = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    return
-    
+    mycursor = mydb.cursor()# Connecting to database and getting cursor
+    mycursor.execute("INSERT INTO transactions(title, content) VALUES (%s, %s)" % (title, content))  # Adding data to db
+    mydb.commit()  # Applying changes
+    return ""
+
+def get_data():
+    #  return all of the weightings and their info 
+    #  from t1 to t2 (and direction!) in JSON format.
+    mycursor = mydb.cursor()# Connecting to database and getting cursor
+    mycursor.execute("use weight")
+    mycursor.execute("SHOW COLUMNS FROM transactions")# Getting data from db. SELECT <column> from <table>
+    myresult = str(mycursor.fetchall())
+    return myresult
+
 @app.route('/health')
 def health():
-    response = Response(status=200)
-    return response
+    return Response("OK",status=200, mimetype="text")
+
+@app.route('/weight', methods=['GET'])
+def get():
+    return get_data()
+       
+@app.route('/weight', methods=['POST'])
+def insert():
+    return "OK"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port='5001')
