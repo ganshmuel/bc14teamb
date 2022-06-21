@@ -12,7 +12,7 @@ def githubWebhook():
     
     return "ok"
 
-@app.route("/test", method=["GET", "POST"])
+@app.route("/test", methods=["GET", "POST"])
 def test():
     content = request.json
     branch = content['ref'].partition('refs/heads/')[2]
