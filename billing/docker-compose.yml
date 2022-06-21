@@ -2,12 +2,18 @@ version: "3.7"
 
 services:
   app:
+    restart: always
     platform: linux/amd64
+    volumes:
+      - ./app:/app
     build: ./app
     links:
       - db
     ports:
-      - "5000:5000"
+      - "8080:8081"
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     platform: linux/amd64
     image: mysql:8
@@ -20,3 +26,7 @@ services:
       MYSQL_PASSWORD: password
     volumes:
       - ./db:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
