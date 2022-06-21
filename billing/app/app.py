@@ -1,4 +1,4 @@
-#!/usr/bin/env python3https://github.com/ganshmuel/bc14teamb/blob/billing_rest_imp/billing/app/app.py
+#!/usr/bin/env python3
 
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
