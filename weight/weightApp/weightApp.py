@@ -1,28 +1,10 @@
 import sqlite3 as sql
-from flask import Flask, render_template, Response, jsonify
+from flask import Flask, render_template, Response, jsonify, request
 from typing import List, Dict
 import mysql
 import mysql.connector
 
 app = Flask(__name__)
-
-
-def favorite_colors() -> List[Dict]:
-    config = {
-        'user': 'root',
-        'password': 'root',
-        'host': 'db',
-        'port': '3306',
-        'database': 'Weight'
-    }
-    connection = mysql.connector.connect(**config)
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM favorite_colors')
-    results = [{name: color} for (name, color) in cursor]
-    cursor.close()
-    connection.close()
-
-    return results
 
 mydb = mysql.connector.connect(  # db configuration
         host="db",
@@ -69,4 +51,4 @@ def insert():
     return "OK"
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port='5001')
+    app.run(debug=True, host='0.0.0.0', port='8081')
