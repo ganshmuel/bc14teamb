@@ -32,6 +32,7 @@ parser = reqparse.RequestParser()
 parser.add_argument('name', required=True, nullable=False, type=nameValidator)
 
 
+
 class HealthGet(Resource):
     def get(self):
         return Response('OK', status=200, mimetype='text')

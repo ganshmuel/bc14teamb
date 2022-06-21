@@ -1,10 +1,36 @@
-*Dockerfile
+test with curl:  
 
-*docker-compose
+POST /provider  
+creates a new provider record, request must include a 'name' parameter 
 
-*test in "tests" folder
+```curl -H "Content-Type: application/json" -d '{"name":"roy"}' -X POST http://127.0.0.1:5000/provider  ```
 
-The work flow will be that the "Develop" branch will be the master and the teams will pull and and push with him.
+PUT /provider/id  
+Update existing provider name  
 
-from there the Devops team push to the real master "main".
-Do not push to ----main----, we dont heve protection on it yet, still feguring it out. use git push origin <your branch name>
+```curl -H "Content-Type: application/json" -d '{"name":"roy"}' -X PUT http://127.0.0.1:5000/provider/420```
+
+Try without passing a name, see what you get:  
+
+```curl -H "Content-Type: application/json" -X POST http://127.0.0.1:5000/provider```  
+```curl -H "Content-Type: application/json" -X PUT http://127.0.0.1:5000/provider/420```
+
+Empty name:  
+
+```curl -H "Content-Type: application/json" -d '{"name":""}' -X POST http://127.0.0.1:5000/provider```  
+```curl -H "Content-Type: application/json" -d '{"name":""}' -X PUT http://127.0.0.1:5000/provider/420```
+
+Wrong request type:  
+
+```curl -H "Content-Type: application/json" -d '{"name":""}' -X DELETE http://127.0.0.1:5000/provider```  
+```curl -H "Content-Type: application/json" -d '{"name":""}' -X DELETE http://127.0.0.1:5000/provider/420```
+
+Wrong content type:  
+
+```curl -H "Content-Type: text/plain" --data "this is raw data" -X POST http://127.0.0.1:5000/provider```  
+```curl -H "Content-Type: text/plain" --data "this is raw data" -X PUT http://127.0.0.1:5000/provider/420```
+
+Null values?  
+
+```curl -H "Content-Type: application/json" -d '{"name":null}' -X POST http://127.0.0.1:5000/provider```  
+```curl -H "Content-Type: application/json" -d '{"name":null}' -X PUT http://127.0.0.1:5000/provider/420```
