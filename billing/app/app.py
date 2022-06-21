@@ -4,14 +4,13 @@ from flask import Flask, Response
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 
-
 app = Flask(__name__)
 api = Api(app)
 
 dbConnect = mysql.connector.connect(
     # host=db refers to the mysql container, do not change it
     host="db",
-    port="3306",
+    port=3306,
     user="root",
     password="password",
     database="billdb",
@@ -32,7 +31,6 @@ parser = reqparse.RequestParser()
 parser.add_argument('name', required=True, nullable=False, type=nameValidator)
 
 
-
 class HealthGet(Resource):
     def get(self):
         return Response('OK', status=200, mimetype='text')
@@ -41,8 +39,7 @@ class HealthGet(Resource):
 class ProviderPost(Resource):
     def post(self):
         args = parser.parse_args()
-        name=args['name']
-
+        name = args['name']
         sql_search_name = f"SELECT name FROM Provider WHERE name = '{name}'"
         cursor.execute(sql_search_name)
         isNameExists = cursor.fetchone()
