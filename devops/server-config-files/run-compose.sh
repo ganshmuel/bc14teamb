@@ -1,3 +1,3 @@
 #/bin/bash
-echo $(ls ../ ) 
 
+docker compose -f "/tests/docker-compose.yml" up && echo "success"

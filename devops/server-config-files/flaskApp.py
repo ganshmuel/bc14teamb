@@ -1,9 +1,16 @@
+from re import sub
 from flask import Flask
+import subprocess
 
 app = Flask(__name__)
 
-@app.route("/")
+def runCompose():
+    subprocess.run(["bash","run-compose.sh"])
+
+
+@app.route("/test")
 def health():
+    runCompose()
     return "OK"
 
 if __name__ == "__main__":
