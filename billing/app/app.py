@@ -8,6 +8,7 @@ app = Flask(__name__)
 api = Api(app)
 
 mydb = mysql.connector.connect(
+    # host=db refers to the mysql container, do not change it
     host="db",
     user="root",
     password="password",
