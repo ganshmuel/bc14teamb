@@ -57,7 +57,7 @@ class ProviderPost(Resource):
 
 
 api.add_resource(HealthGet, '/', '/health')
-api.add_resource(ProviderPost, '/', '/provider')
+api.add_resource(ProviderPost, '/provider')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
