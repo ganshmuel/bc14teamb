@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 def runCompose():
     subprocess.call("./run-compose.sh",shell=True)
-
+    
 @app.route("/github-webhook", methods=['POST'])
 def githubWebhook():
     
@@ -14,12 +14,11 @@ def githubWebhook():
 @app.route("/test", methods=["GET", "POST"])
 def test():
     if request.method == 'POST':
-        print('Webhook Received')
         request_json = request.json        # print the received notification
         print('Payload: ')
         # Change from original - remove the need for function to print
         print(json.dumps(request_json,indent=4))
-    runCompose()
+        runCompose()
     return "OK"
 
 if __name__ == "__main__":
