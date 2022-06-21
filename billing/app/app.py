@@ -4,13 +4,14 @@ from flask import Flask, Response
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 
+
 app = Flask(__name__)
 api = Api(app)
 
 dbConnect = mysql.connector.connect(
     # host=db refers to the mysql container, do not change it
     host="db",
-    port=3306,
+    port="3306",
     user="root",
     password="password",
     database="billdb",
@@ -39,7 +40,7 @@ class HealthGet(Resource):
 class ProviderPost(Resource):
     def post(self):
         args = parser.parse_args()
-        name = name=args['name']
+        name=args['name']
 
         sql_search_name = f"SELECT name FROM Provider WHERE name = '{name}'"
         cursor.execute(sql_search_name)
@@ -56,8 +57,34 @@ class ProviderPost(Resource):
 
 
 
+
+class ProviderPut(Resource):
+    def put(self, provider_id):
+        args = parser.parse_args()
+        name = args['name']
+
+        sql = f"SELECT id FROM Provider WHERE id = '{provider_id}'"
+        cursor.execute(sql)
+        out = cursor.fetchone()
+        if out == None:
+            return Response("Provider with this id doesn' exists " + "   " + name, status=400, mimetype='text')
+
+        sql = f"SELECT name FROM Provider WHERE name = '{name}'"
+        cursor.execute(sql)
+        out = cursor.fetchone()
+        if out != None:
+            return Response('Provider with this name already exists ' + "   " + name, status=400, mimetype='text')
+        sql = "UPDATE Provider SET name = %s WHERE id = %s"
+        print(provider_id)
+        val = (name, provider_id)
+        cursor.execute(sql, val)
+        dbConnect.commit()
+        return Response('Provider was updated')
+
+
 api.add_resource(HealthGet, '/', '/health')
-api.add_resource(ProviderPost, '/', '/provider')
+api.add_resource(ProviderPost,  '/provider/')
+api.add_resource(ProviderPut,  '/provider/<provider_id>')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
