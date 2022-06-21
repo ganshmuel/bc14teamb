@@ -4,6 +4,8 @@ services:
   app:
     restart: always
     platform: linux/amd64
+    volumes:
+      - ./app:/app
     build: ./app
     links:
       - db
