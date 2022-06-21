@@ -7,5 +7,5 @@ WORKDIR /app
 COPY requirements.txt /app
 RUN pip install -r requirements.txt
 
-COPY app.py /app
-CMD python app.py
+COPY weightApp.py /app
+CMD python weightApp.py

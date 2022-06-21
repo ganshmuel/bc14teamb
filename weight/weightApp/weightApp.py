@@ -53,6 +53,15 @@ def health():
 
 @app.route('/weight', methods=['GET'])
 def get():
+    frm = request.args.get('from')
+    to = request.args.get('to')
+    filter = request.args.get('filter')
+    if frm == None:
+        frm = datetime.datetime.now().strftime("%Y%m%d000000")
+    if to == None:
+        to = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    if filter == None:
+        filter = "in,out,none"
     return get_data()
        
 @app.route('/weight', methods=['POST'])
