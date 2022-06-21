@@ -1,21 +1,25 @@
 version: "2"
 services:
   app:
+    restart: always
     platform: "linux/amd64"
-    build: ./app
+    build: ./weightApp
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     links:
       - db
     ports:
-      - "5001:5001"
+      - "8081:8081"
 
   db:
     platform: "linux/amd64"
     image: mysql:5.7
-    ports:
-      - "32000:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - ./db:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
