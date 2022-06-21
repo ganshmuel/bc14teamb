@@ -3,9 +3,13 @@
 from flask import Flask, Response
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
+import os
 
 app = Flask(__name__)
 api = Api(app)
+
+# INTERNAL_APP_PORT is defined in the Dockerfile
+app_port = os.getenv('INTERNAL_APP_PORT')
 
 dbConnect = mysql.connector.connect(
     # host=db refers to the mysql container, do not change it
@@ -58,4 +62,4 @@ api.add_resource(HealthGet, '/', '/health')
 api.add_resource(ProviderPost, '/provider')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=app_port, debug=True)
