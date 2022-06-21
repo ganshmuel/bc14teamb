@@ -39,8 +39,7 @@ class HealthGet(Resource):
 class ProviderPost(Resource):
     def post(self):
         args = parser.parse_args()
-        name = name=args['name']
-
+        name = args['name']
         sql_search_name = f"SELECT name FROM Provider WHERE name = '{name}'"
         cursor.execute(sql_search_name)
         isNameExists = cursor.fetchone()
@@ -53,7 +52,6 @@ class ProviderPost(Resource):
             return {"id": f"{cursor.lastrowid}"}
         else:
             return Response('This provider exists in our system', status=400, mimetype='text')
-
 
 
 api.add_resource(HealthGet, '/', '/health')
