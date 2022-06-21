@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, Response, request
+from flask import Flask, Response
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 
@@ -20,17 +20,14 @@ def non_empty_string(s):
         raise ValueError("Must not be empty string")
     return s
 
-
 parser = reqparse.RequestParser()
 parser.add_argument('name', required=True, nullable=False, type=non_empty_string)
 
-# Routes Section
 def createProvider(name: str):
     if name != None or name != "":
         print("hello")
     else:
         return Response('400 Bad Request: Please pass a valid provider name!', status=400, mimetype='text')
-
 
 class HealthGet(Resource):
     def get(self):
@@ -46,4 +43,4 @@ api.add_resource(HealthGet, '/', '/health')
 api.add_resource(ProviderPost, '/', '/provider')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=8081, debug=True)
