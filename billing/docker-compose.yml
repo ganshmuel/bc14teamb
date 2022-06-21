@@ -10,7 +10,8 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - "db"
+      db:
+        condition: service_healthy
   db:
     platform: linux/amd64
     image: mysql:5.7
@@ -23,3 +24,7 @@ services:
       MYSQL_PASSWORD: password
     volumes:
       - ./db:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
