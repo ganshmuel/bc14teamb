@@ -1,0 +1,21 @@
+version: "2"
+services:
+  app:
+    platform: "linux/amd64"
+    build: ./app
+    depends_on:
+      - db
+    links:
+      - db
+    ports:
+      - "5001:5001"
+
+  db:
+    platform: "linux/amd64"
+    image: mysql:5.7
+    ports:
+      - "32000:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/
