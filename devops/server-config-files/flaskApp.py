@@ -11,8 +11,8 @@ def githubWebhook():
     
     return "ok"
 
-@app.route("/deploy", methods=["GET", "POST"])
-def deploy():
+@app.route("/test", methods=["GET", "POST"])
+def test():
     if request.method == 'POST':
         request_json = request.json        # print the received notification
         print('Payload: ')
