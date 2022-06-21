@@ -1,7 +1,6 @@
 from re import sub
-from flask import Flask , request
+from flask import Flask , request, json
 import subprocess 
-
 app = Flask(__name__)
 
 def runCompose():
@@ -14,10 +13,12 @@ def githubWebhook():
 
 @app.route("/test", methods=["GET", "POST"])
 def test():
-    content = request.json
-    branch = content['ref'].partition('refs/heads/')[2]
-    repository = content['repository']['full_name']
-    print(branch, repository)
+    if request.method == 'POST':
+        print('Webhook Received')
+        request_json = request.json        # print the received notification
+        print('Payload: ')
+        # Change from original - remove the need for function to print
+        print(json.dumps(request_json,indent=4))
     runCompose()
     return "OK"
 
