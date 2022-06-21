@@ -1,6 +1,7 @@
 import sqlite3 as sql
 from flask import Flask, render_template, Response, jsonify
 from typing import List, Dict
+import mysql
 import mysql.connector
 
 app = Flask(__name__)
