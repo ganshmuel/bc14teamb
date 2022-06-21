@@ -12,16 +12,20 @@ mydb = mysql.connector.connect(
     user="root",
     password="password",
     database="billdb",
-    auth_plugin='mysql_native_password'
-    )
+    auth_plugin="mysql_native_password",
+    port=3306
+)
+
 
 def non_empty_string(s):
     if not s:
         raise ValueError("Must not be empty string")
     return s
 
+
 parser = reqparse.RequestParser()
 parser.add_argument('name', required=True, nullable=False, type=non_empty_string)
+
 
 def createProvider(name: str):
     if name != None or name != "":
@@ -29,9 +33,11 @@ def createProvider(name: str):
     else:
         return Response('400 Bad Request: Please pass a valid provider name!', status=400, mimetype='text')
 
+
 class HealthGet(Resource):
     def get(self):
         return Response('OK', status=200, mimetype='text')
+
 
 class ProviderPost(Resource):
     def post(self):
@@ -39,8 +45,9 @@ class ProviderPost(Resource):
         name = args['name']
         return name
 
+
 api.add_resource(HealthGet, '/', '/health')
 api.add_resource(ProviderPost, '/', '/provider')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8081, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
