@@ -1,11 +1,11 @@
 from re import sub
 from flask import Flask , request
-import subprocess
+import subprocess 
 
 app = Flask(__name__)
 
 def runCompose():
-    subprocess.run(["bash","run-compose.sh"])
+    subprocess.call("./run-compose.sh",shell=True)
 
 @app.route("/github-webhook", methods=['POST'])
 def githubWebhook():
