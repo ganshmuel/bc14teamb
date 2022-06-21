@@ -41,12 +41,19 @@ class ProviderPost(Resource):
     def post(self):
         args = parser.parse_args()
         name = name=args['name']
-        sql = "INSERT INTO Provider (name) VALUES (%s)"
-        val = [(name)]
-        cursor.execute(sql, val)
-        dbConnect.commit()
-        print(cursor.lastrowid, f"{cursor.rowcount} Provider inserted.")
-        return {"id": f"{cursor.lastrowid}"}
+
+        sql_search_name = f"SELECT name FROM Provider WHERE name = '{name}'"
+        cursor.execute(sql_search_name)
+        isNameExists = cursor.fetchone()
+        if isNameExists == None:
+            sql_insert_name = "INSERT INTO Provider (name) VALUES (%s)"
+            val_name = [(name)]
+            cursor.execute(sql_insert_name, val_name)
+            dbConnect.commit()
+            print(cursor.lastrowid, f"{cursor.rowcount} Provider inserted.")
+            return {"id": f"{cursor.lastrowid}"}
+        else:
+            return Response('This provider exists in our system', status=400, mimetype='text')
 
 
 
