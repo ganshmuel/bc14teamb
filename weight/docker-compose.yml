@@ -1,6 +1,7 @@
 version: "2"
 services:
   app:
+    container_name: ${APP_NAME}
     restart: always
     platform: "linux/amd64"
     build: ./weightApp
@@ -10,9 +11,10 @@ services:
     links:
       - db
     ports:
-      - "8081:8081"
+      - "${EXTERNAL_APP_PORT}:8081"
 
   db:
+    container_name: ${DB_NAME}
     platform: "linux/amd64"
     image: mysql:5.7
     environment:

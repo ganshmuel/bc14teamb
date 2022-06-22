@@ -3,23 +3,24 @@ from flask import Flask , request, json
 import subprocess 
 app = Flask(__name__)
 
+def initiate_git():
+    subprocess.call("/test-env/exec-files/init-git.sh", shell=True)
+
 def runCompose():
     subprocess.call("./run-compose.sh",shell=True)
     
-@app.route("/github-webhook", methods=['POST'])
-def githubWebhook():
-    
-    return "ok"
+def pullBranch(branchName):
+    subprocess.call("/test-env/exec-files/pull-branch.sh " + branchName , shell=True)
+    return True
+def runTest(branchName):
+    subprocess.call("/test-env/exec-files/run-compose.sh " + branchName + " dev", shell=True)
+    return True    
 
-@app.route("/test", methods=["GET", "POST"])
+@app.route("/test", methods=[ "POST"])
 def test():
-    if request.method == 'POST':
-        request_json = request.json        # print the received notification
-        print('Payload: ')
-        # Change from original - remove the need for function to print
-        print(json.dumps(request_json,indent=4))
-        runCompose()
+    pullBranch("billing") and runTest("billing")
     return "OK"
 
 if __name__ == "__main__":
+    initiate_git()
     app.run(host="0.0.0.0", port=5000)
