@@ -32,7 +32,6 @@ def nameValidator(name):
     return name
 
 
-<<<<<<< HEAD
 def providerIdValidator(provider_id):
     if not provider_id:
         raise ValueError("Must not be empty provider_id")
@@ -51,8 +50,6 @@ def getProviderIdInDb(provider_id):
 
 
 
-=======
->>>>>>> refs/remotes/origin/billing
 class HealthGet(Resource):
     def get(self):
         return {'message': 'OK'}, 200
