@@ -75,6 +75,8 @@ check_response_code "200" "${response_code}"
 
 # ----------- POST /Rates -----------
 
+echo "TEST: POST /rates, positive test"
+
 filename="POST_rates_test"
 url="http://$host:$port/rates"
 payload="$(jq --null-input --arg nm "$filename" '{"file": $nm}')"
