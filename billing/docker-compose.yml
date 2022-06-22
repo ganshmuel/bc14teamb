@@ -14,7 +14,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - /usr/share/billing_app/:/app/in
+      - ./in/:/app/in
   db:
     container_name: ${DB_NAME}
     platform: linux/amd64
