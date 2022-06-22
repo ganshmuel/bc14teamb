@@ -12,6 +12,10 @@ services:
       - db
     ports:
       - "${EXIT_PORT}:8081"
+    environment:
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: weight
 
   db:
     container_name: ${DB_NAME}
@@ -19,9 +23,15 @@ services:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_USERNAME: root
+      MYSQL_DATABASE: weight
+      MYSQL_PASSWORD: root
     volumes:
       - ./db:/docker-entrypoint-initdb.d/
+      - db_vol:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
+      timeout: 10s
       retries: 10
+volumes:
+    db_vol:
