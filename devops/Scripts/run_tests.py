@@ -6,16 +6,22 @@ import subprocess
 # if yes the tests are succeed if not the tests failed
 result=set()
 with open('tests/tests.sh', 'r') as fp:
-    lines = fp.readlines()
+    lines = (l for l in (line.strip() for line in fp) if l)
     cnt = 1
-    for index, line in enumerate(lines):
-        if (cnt != 1 ):
-            status= subprocess.run(["sh", "-c", line.strip()],stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+    codebuild = ''
+    for line in lines:
+        cmd = line.strip()
+        if (cnt != 1 and not cmd.startswith('#')):
+            if (cmd.endswith('\\')):
+                codebuild += cmd[:-1]
+                continue
+            codebuild += cmd
+            status= subprocess.run(["sh", "-c", codebuild],stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
             result.add(status)
+            codebuild = ''
         cnt+=1
 
 if (len(result) == 1 and list(result)[0] == "200"):
     print("success")
-
+else: print("failed")
        
-
