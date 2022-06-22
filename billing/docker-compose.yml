@@ -3,6 +3,7 @@ version: "3.7"
 services:
   app:
     container_name: ${APP_NAME}
+    image: ${APP_NAME}:v2
     platform: linux/amd64
     build: .
     links:
