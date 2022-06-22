@@ -6,6 +6,7 @@ from flask_restful import Resource, Api, reqparse
 import mysql.connector
 from os import path
 from openpyxl import load_workbook
+import shutil
 
 app = Flask(__name__)
 api = Api(app)
@@ -57,7 +58,6 @@ def isProviderIdInDb(provider_id):
         return False
     return True
 
-
 class HealthGet(Resource):
     def get(self):
         try:
@@ -96,6 +96,9 @@ class Rates(Resource):
         fileName = args['file']
         file = f'{os.getcwd()}/in/{fileName}.xlsx'
         if path.exists(file):
+            f = open(f'{os.getcwd()}/in/last-file.txt', 'w')
+            f.write(file)
+            f.close()
             wb = load_workbook(file)
             ws = wb.active
             wb.save(file)
@@ -123,8 +126,12 @@ class Rates(Resource):
             return {"message": f'{fileName}.xlsx not exist, please provide existing excel file.'}, 400
 
     def get(self):
-        return {"message": 'get rates route'}, 200
-
+        lastFileLocation = open(f'{os.getcwd()}/in/last-file.txt', "r")
+        lastFile = lastFileLocation.read()
+        lastFileLocation.close()
+        fileCopy = f"{os.getcwd()}/in/last_rates_file.xlsx"
+        shutil.copy(lastFile, fileCopy)
+        return {"message":'last_rates_file.xlsx was generated'}, 200
 
 class ProviderPut(Resource):
     parser = reqparse.RequestParser()
@@ -178,4 +185,4 @@ api.add_resource(ProviderPut, '/provider/<provider_id>')
 api.add_resource(Rates, '/rates')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=app_port, debug=True)
+    app.run(host="0.0.0.0", port=app_port, debug=False)
