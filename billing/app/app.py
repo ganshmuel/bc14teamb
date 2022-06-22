@@ -23,6 +23,7 @@ dbConnect = mysql.connector.connect(
 
 cursor = dbConnect.cursor()
 
+
 def nameValidator(name):
     if not name:
         raise ValueError("Must not be empty string")
@@ -31,6 +32,7 @@ def nameValidator(name):
     return name
 
 
+<<<<<<< HEAD
 def providerIdValidator(provider_id):
     if not provider_id:
         raise ValueError("Must not be empty provider_id")
@@ -49,9 +51,11 @@ def getProviderIdInDb(provider_id):
 
 
 
+=======
+>>>>>>> refs/remotes/origin/billing
 class HealthGet(Resource):
     def get(self):
-        return Response('OK', status=200, mimetype='text')
+        return {'message': 'OK'}, 200
 
 
 class ProviderPost(Resource):
@@ -73,8 +77,6 @@ class ProviderPost(Resource):
             return {"id": f"{cursor.lastrowid}"}
         else:
             return Response('This provider exists in our system', status=400, mimetype='text')
-
-
 
 
 class ProviderPut(Resource):
@@ -122,11 +124,11 @@ class TruckPost(Resource):
         # sql_insert_name = "INSERT INTO Trucks (id, provider_id) VALUES (%s, %s)"
         # val = ([truck_licence_plates, provider_id])
 
-
 api.add_resource(TruckPost, '/truck/')
+
 api.add_resource(HealthGet, '/', '/health')
-api.add_resource(ProviderPost,  '/provider/')
-api.add_resource(ProviderPut,  '/provider/<provider_id>')
+api.add_resource(ProviderPost, '/provider/')
+api.add_resource(ProviderPut, '/provider/<provider_id>')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=app_port, debug=True)
