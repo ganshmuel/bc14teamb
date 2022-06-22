@@ -35,18 +35,25 @@ def nameValidator(name):
 def providerIdValidator(provider_id):
     if not provider_id:
         raise ValueError("Must not be empty provider_id")
-    if int(provider_id) < 10000:
+    if int(provider_id) < 10000 and int(provider_id) >999999999 :
         raise ValueError("Must not be >= 10000")
     return provider_id
 
+def truckLicenseValidator(name):
+    if not name:
+        raise ValueError("Must not be empty string")
+    if len(name) > 255:
+        raise ValueError("Must not be longer then 255 charecters")
+        return name
+
+
 #return id or None
-def getProviderIdInDb(provider_id):
+def isProviderIdInDb(provider_id):
     sql_search_name = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
     cursor.execute(sql_search_name)
-    one = cursor.fetchone()
-    print(one)
-    print(cursor.lastrowid)
-    return cursor.lastrowid
+    if cursor.fetchone() == None:
+        return False
+    return True
 
 
 
@@ -106,21 +113,21 @@ class ProviderPut(Resource):
 class TruckPost(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('provider_id', required=True, nullable=False, type = providerIdValidator)
+    parser.add_argument('id', required=True, nullable=False)
+
+
 
     def post(self):
         args = self.parser.parse_args()
-        id = args['provider_id']
-        provider_table_id  = getProviderIdInDb(id)
-        return {"id": f"{provider_table_id}"}
-        # truck_licence_plates = args['id']
-        # sql = f"SELECT id FROM Provider WHERE id = '{provider_id}'"
-        # cursor.execute(sql)
-        # out = cursor.fetchone()
-        # if out != None:
-        #     return Response("Provider with this id doesn' exists.", status=400, mimetype='text')
-        # sql_insert_name = "INSERT INTO Trucks (id, provider_id) VALUES (%s, %s)"
-        # val = ([truck_licence_plates, provider_id])
-
+        provider_id = args['provider_id']
+        truck_id = args['id']
+        if isProviderIdInDb(provider_id) == None:
+            return Response("This provider doesn't exist in our system", status=400, mimetype='json')
+        sql_insert_name = "INSERT INTO Trucks (id, provider_id) VALUES (%s, %s)"
+        val = (truck_id, provider_id)
+        cursor.execute(sql_insert_name, val)
+        dbConnect.commit()
+        return Response('Ok', status=200, mimetype='json')
 api.add_resource(TruckPost, '/truck/')
 
 api.add_resource(HealthGet, '/', '/health')
