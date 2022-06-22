@@ -32,18 +32,17 @@ def nameValidator(name):
     return name
 
 
-parser = reqparse.RequestParser()
-parser.add_argument('name', required=True, nullable=False, type=nameValidator)
-
-
 class HealthGet(Resource):
     def get(self):
         return {'message': 'OK'}, 200
 
 
 class ProviderPost(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', required=True, nullable=False, type=nameValidator)
+
     def post(self):
-        args = parser.parse_args()
+        args = self.parser.parse_args()
         name = args['name']
         sql_search_name = f"SELECT name FROM Provider WHERE name = '{name}'"
         cursor.execute(sql_search_name)
@@ -60,8 +59,11 @@ class ProviderPost(Resource):
 
 
 class ProviderPut(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', required=True, nullable=False, type=nameValidator)
+
     def put(self, provider_id):
-        args = parser.parse_args()
+        args = self.parser.parse_args()
         name = args['name']
 
         sql = f"SELECT id FROM Provider WHERE id = '{provider_id}'"
