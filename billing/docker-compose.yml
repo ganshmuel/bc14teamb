@@ -2,18 +2,20 @@ version: "3.7"
 
 services:
   app:
+    container_name: ${APP_NAME}
     platform: linux/amd64
     build: .
     links:
       - db
     ports:
-      - "${EXTERNAL_APP_PORT:-8080}:8080"
+      - "${EXIT_PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - ./in/:/app/in
   db:
+    container_name: ${DB_NAME}
     platform: linux/amd64
     image: mysql:8
     environment:

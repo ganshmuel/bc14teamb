@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from flask import Flask
+from flask import Flask, Response
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 from os import path
@@ -9,6 +9,9 @@ from openpyxl import load_workbook
 
 app = Flask(__name__)
 api = Api(app)
+
+# INTERNAL_APP_PORT is defined in the Dockerfile
+app_port = os.getenv('INTERNAL_APP_PORT')
 
 dbConnect = mysql.connector.connect(
     # host=db refers to the mysql container, do not change it
@@ -22,22 +25,42 @@ dbConnect = mysql.connector.connect(
 
 cursor = dbConnect.cursor(buffered=True)
 
-def stringValidator(string):
-    if not string:
+
+def nameValidator(name):
+    if not name:
         raise ValueError("Must not be empty string")
-    if len(string) > 255:
+    if len(name) > 255:
         raise ValueError("Must not be longer then 255 charecters")
-    return string
+    return name
+
+
+def providerIdValidator(provider_id):
+    if not provider_id:
+        raise ValueError("Must not be empty provider_id")
+    if int(provider_id) < 10000:
+        raise ValueError("Must not be >= 10000")
+    return provider_id
+
+#return id or None
+def getProviderIdInDb(provider_id):
+    sql_search_name = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
+    cursor.execute(sql_search_name)
+    one = cursor.fetchone()
+    print(one)
+    print(cursor.lastrowid)
+    return cursor.lastrowid
+
 
 
 class HealthGet(Resource):
     def get(self):
-        return {"message": 'OK'}, 200
+        return {'message': 'OK'}, 200
 
 
 class ProviderPost(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('name', required=True, nullable=False, type=stringValidator)
+    parser.add_argument('name', required=True, nullable=False, type=nameValidator)
+
     def post(self):
         args = self.parser.parse_args()
         name = args['name']
@@ -55,7 +78,7 @@ class ProviderPost(Resource):
 
 class Rates(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('file', required=True, nullable=False, type=stringValidator)
+    parser.add_argument('file', required=True, nullable=False, type=nameValidator)
     def post(self):
         args = self.parser.parse_args()
         fileName = args['file']
@@ -90,9 +113,56 @@ class Rates(Resource):
     def get(self):
         return {"message":'get rates route'}, 200
 
+class ProviderPut(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', required=True, nullable=False, type=nameValidator)
+
+    def put(self, provider_id):
+        args = self.parser.parse_args()
+        name = args['name']
+
+        sql = f"SELECT id FROM Provider WHERE id = '{provider_id}'"
+        cursor.execute(sql)
+        out = cursor.fetchone()
+        if out == None:
+            return Response("Provider with this id doesn' exists ", status=400, mimetype='text')
+
+        sql = f"SELECT name FROM Provider WHERE name = '{name}'"
+        cursor.execute(sql)
+        out = cursor.fetchone()
+        if out != None:
+            return Response('Provider with this name already exists ', status=400, mimetype='text')
+        sql = "UPDATE Provider SET name = %s WHERE id = %s"
+        val = (name, provider_id)
+        cursor.execute(sql, val)
+        dbConnect.commit()
+        return {"id": provider_id, "new_name": name}
+
+
+
+class TruckPost(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('provider_id', required=True, nullable=False, type = providerIdValidator)
+
+    def post(self):
+        args = self.parser.parse_args()
+        id = args['provider_id']
+        provider_table_id  = getProviderIdInDb(id)
+        return {"id": f"{provider_table_id}"}
+        # truck_licence_plates = args['id']
+        # sql = f"SELECT id FROM Provider WHERE id = '{provider_id}'"
+        # cursor.execute(sql)
+        # out = cursor.fetchone()
+        # if out != None:
+        #     return Response("Provider with this id doesn' exists.", status=400, mimetype='text')
+        # sql_insert_name = "INSERT INTO Trucks (id, provider_id) VALUES (%s, %s)"
+        # val = ([truck_licence_plates, provider_id])
+
+api.add_resource(TruckPost, '/truck/')
 api.add_resource(HealthGet, '/', '/health')
-api.add_resource(ProviderPost, '/provider')
+api.add_resource(ProviderPost, '/provider/')
+api.add_resource(ProviderPut, '/provider/<provider_id>')
 api.add_resource(Rates,'/rates')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=False)
+    app.run(host="0.0.0.0", port=app_port, debug=True)

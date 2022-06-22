@@ -16,7 +16,8 @@ WORKDIR /app
 
 # Update Python
 
-RUN python3 -m pip install --upgrade pip setuptools wheel
+RUN python3 -m pip install --upgrade pip setuptools wheel; \
+    apk add --no-cache curl
 
 # Install any needed packages specified in requirements.txt
 
@@ -25,5 +26,11 @@ COPY ./app/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY ./app/app.py /app/app.py
+
+# the INTERNAL port of the app, inside the container
+
+ENV INTERNAL_APP_PORT=8080
+
+HEALTHCHECK --timeout=2s CMD curl --fail http://localhost:${INTERNAL_APP_PORT}/health || exit 1
 
 ENTRYPOINT [ "python3", "app.py" ]
