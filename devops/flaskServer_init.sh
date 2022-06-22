@@ -1,5 +1,4 @@
 #/bin/bash
-
 docker stop ci-test-server
 docker build -t flask-server:v1 . && \
 docker run  --rm -d --name ci-test-server -p 8089:5000 \

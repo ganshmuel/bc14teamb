@@ -4,7 +4,6 @@ services:
   app:
     image: ${APP_NAME}:dev
     container_name: ${APP_NAME}
-    image: ${APP_NAME}:v2
     platform: linux/amd64
     build: .
     links:

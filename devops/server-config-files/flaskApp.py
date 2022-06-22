@@ -20,9 +20,10 @@ def runTest(branchName):
 @app.route("/test", methods=[ "POST"])
 def test():
     data = request.get_json()
-    print(data["ref"])   
-    #pullBranch(branchName) and runTest(branchName)
-    return "OK"
+    branchName =data["ref"].partition("refs/heads/")[2]  
+    pullBranch(branchName) and runTest(branchName)
+    return "ok" 
+    
 
 if __name__ == "__main__":
     initiate_git()
