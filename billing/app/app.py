@@ -73,11 +73,12 @@ class ProviderPut(Resource):
         if out != None:
             return Response('Provider with this name already exists ' + "   " + name, status=400, mimetype='text')
         sql = "UPDATE Provider SET name = %s WHERE id = %s"
-        print(provider_id)
         val = (name, provider_id)
         cursor.execute(sql, val)
         dbConnect.commit()
-        return Response('Provider was updated')
+        return {"id": provider_id, "new_name": name}
+
+
 
 
 api.add_resource(HealthGet, '/', '/health')
