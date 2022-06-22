@@ -27,5 +27,5 @@ services:
       - ./db:/docker-entrypoint-initdb.d/
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
+      timeout: 25s
       retries: 10
