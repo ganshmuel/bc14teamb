@@ -12,7 +12,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - /usr/share/billing_app/:/app/in
+      - ./in/:/app/in
   db:
     platform: linux/amd64
     image: mysql:8
