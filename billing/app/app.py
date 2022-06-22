@@ -6,6 +6,7 @@ from flask_restful import Resource, Api, reqparse
 import mysql.connector
 from os import path
 from openpyxl import load_workbook
+import shutil
 
 app = Flask(__name__)
 api = Api(app)
@@ -37,20 +38,25 @@ def nameValidator(name):
 def providerIdValidator(provider_id):
     if not provider_id:
         raise ValueError("Must not be empty provider_id")
-    if int(provider_id) < 10000:
+    if int(provider_id) < 10000 and int(provider_id) >999999999 :
         raise ValueError("Must not be >= 10000")
     return provider_id
 
 
-# return id or None
-def getProviderIdInDb(provider_id):
+def truckLicenseValidator(name):
+    if not name:
+        raise ValueError("Must not be empty string")
+    if len(name) > 255:
+        raise ValueError("Must not be longer then 255 charecters")
+        return name
+
+
+def isProviderIdInDb(provider_id):
     sql_search_name = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
     cursor.execute(sql_search_name)
-    one = cursor.fetchone()
-    print(one)
-    print(cursor.lastrowid)
-    return cursor.lastrowid
-
+    if cursor.fetchone() == None:
+        return False
+    return True
 
 class HealthGet(Resource):
     def get(self):
@@ -90,6 +96,9 @@ class Rates(Resource):
         fileName = args['file']
         file = f'{os.getcwd()}/in/{fileName}.xlsx'
         if path.exists(file):
+            f = open(f'{os.getcwd()}/in/last-file.txt', 'w')
+            f.write(file)
+            f.close()
             wb = load_workbook(file)
             ws = wb.active
             wb.save(file)
@@ -117,8 +126,12 @@ class Rates(Resource):
             return {"message": f'{fileName}.xlsx not exist, please provide existing excel file.'}, 400
 
     def get(self):
-        return {"message": 'get rates route'}, 200
-
+        lastFileLocation = open(f'{os.getcwd()}/in/last-file.txt', "r")
+        lastFile = lastFileLocation.read()
+        lastFileLocation.close()
+        fileCopy = f"{os.getcwd()}/in/last_rates_file.xlsx"
+        shutil.copy(lastFile, fileCopy)
+        return {"message":'last_rates_file.xlsx was generated'}, 200
 
 class ProviderPut(Resource):
     parser = reqparse.RequestParser()
@@ -148,22 +161,22 @@ class ProviderPut(Resource):
 
 class TruckPost(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
+    parser.add_argument('provider_id', required=True, nullable=False, type = providerIdValidator)
+    parser.add_argument('id', required=True, nullable=False)
+
+
 
     def post(self):
         args = self.parser.parse_args()
-        id = args['provider_id']
-        provider_table_id = getProviderIdInDb(id)
-        return {"id": f"{provider_table_id}"}
-        # truck_licence_plates = args['id']
-        # sql = f"SELECT id FROM Provider WHERE id = '{provider_id}'"
-        # cursor.execute(sql)
-        # out = cursor.fetchone()
-        # if out != None:
-        #     return Response("Provider with this id doesn' exists.", status=400, mimetype='text')
-        # sql_insert_name = "INSERT INTO Trucks (id, provider_id) VALUES (%s, %s)"
-        # val = ([truck_licence_plates, provider_id])
-
+        provider_id = args['provider_id']
+        truck_id = args['id']
+        if isProviderIdInDb(provider_id) == None:
+            return Response("This provider doesn't exist in our system", status=400, mimetype='json')
+        sql_insert_name = "INSERT INTO Trucks (id, provider_id) VALUES (%s, %s)"
+        val = (truck_id, provider_id)
+        cursor.execute(sql_insert_name, val)
+        dbConnect.commit()
+        return Response('Ok', status=200, mimetype='json')
 
 api.add_resource(TruckPost, '/truck/')
 api.add_resource(HealthGet, '/health')
@@ -172,4 +185,4 @@ api.add_resource(ProviderPut, '/provider/<provider_id>')
 api.add_resource(Rates, '/rates')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=app_port, debug=True)
+    app.run(host="0.0.0.0", port=app_port, debug=False)
