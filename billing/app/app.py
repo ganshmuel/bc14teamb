@@ -52,11 +52,22 @@ def truckLicenseValidator(name):
 
 
 def isProviderIdInDb(provider_id):
-    sql_search_name = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
-    cursor.execute(sql_search_name)
-    if cursor.fetchone() == None:
+
+
+    sql_search_id = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
+    cursor.execute(sql_search_id)
+    isNameExists = cursor.fetchone()
+    if isNameExists is None:
         return False
     return True
+
+def isTruckIdInDb(truck_id):
+    sql_search_id = f"SELECT * FROM Trucks WHERE id = '{truck_id}'"
+    cursor.execute(sql_search_id)
+    if cursor.fetchone() is None:
+        return False
+    return True
+
 
 class HealthGet(Resource):
     def get(self):
@@ -159,24 +170,29 @@ class ProviderPut(Resource):
         return {"id": provider_id, "new_name": name}
 
 
+
 class TruckPost(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('provider_id', required=True, nullable=False, type = providerIdValidator)
+    parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
     parser.add_argument('id', required=True, nullable=False)
-
 
 
     def post(self):
         args = self.parser.parse_args()
         provider_id = args['provider_id']
+
         truck_id = args['id']
-        if isProviderIdInDb(provider_id) == None:
+        if isProviderIdInDb(provider_id) is False:
             return Response("This provider doesn't exist in our system", status=400, mimetype='json')
+        if isTruckIdInDb(truck_id) is True:
+            return Response("This truck is already  in our system", status=400, mimetype='json')
+
         sql_insert_name = "INSERT INTO Trucks (id, provider_id) VALUES (%s, %s)"
         val = (truck_id, provider_id)
         cursor.execute(sql_insert_name, val)
         dbConnect.commit()
         return Response('Ok', status=200, mimetype='json')
+
 
 api.add_resource(TruckPost, '/truck/')
 api.add_resource(HealthGet, '/health')
