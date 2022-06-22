@@ -48,7 +48,7 @@ def truckLicenseValidator(name):
         raise ValueError("Must not be empty string")
     if len(name) > 255:
         raise ValueError("Must not be longer then 255 charecters")
-        return name
+    return name
 
 
 def isProviderIdInDb(provider_id):
