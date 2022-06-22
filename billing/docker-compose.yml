@@ -5,8 +5,6 @@ services:
     container_name: ${APP_NAME}
     platform: linux/amd64
     build: .
-    links:
-      - db
     ports:
       - "${EXIT_PORT:-8080}:8080"
     depends_on:
