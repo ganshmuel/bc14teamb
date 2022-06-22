@@ -2,6 +2,7 @@ version: "3.7"
 
 services:
   app:
+    image: ${APP_NAME}:dev
     container_name: ${APP_NAME}
     image: ${APP_NAME}:v2
     platform: linux/amd64
@@ -14,7 +15,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - /usr/share/billing_app/:/app/in
+      - ./in/:/app/in
   db:
     container_name: ${DB_NAME}
     platform: linux/amd64
