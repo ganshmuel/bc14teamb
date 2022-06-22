@@ -12,13 +12,16 @@ def runCompose():
 def pullBranch(branchName):
     subprocess.call("/test-env/exec-files/pull-branch.sh " + branchName , shell=True)
     return True
+
 def runTest(branchName):
     subprocess.call("/test-env/exec-files/run-compose.sh " + branchName + " dev", shell=True)
     return True    
 
 @app.route("/test", methods=[ "POST"])
 def test():
-    pullBranch("billing") and runTest("billing")
+    data = request.get_json()
+    print(data["ref"])   
+    #pullBranch(branchName) and runTest(branchName)
     return "OK"
 
 if __name__ == "__main__":
