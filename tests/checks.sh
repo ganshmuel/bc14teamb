@@ -82,3 +82,6 @@ url="http://$host:$port/rates"
 payload="$(jq --null-input --arg nm "$filename" '{"file": $nm}')"
 response_code="$(curl -o /dev/null -s -w "%{http_code}\n" -H "Content-Type: application/json" --data "$payload" $url)"
 check_response_code "200" "${response_code}"
+
+
+#-------------POST / Trucks -------------
