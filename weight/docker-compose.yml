@@ -11,7 +11,7 @@ services:
     links:
       - db
     ports:
-      - "${EXTERNAL_APP_PORT}:8081"
+      - "${EXIT_PORT}:8081"
 
   db:
     container_name: ${DB_NAME}
