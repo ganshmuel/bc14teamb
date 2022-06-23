@@ -18,10 +18,13 @@ def pullBranch(branchName):
     return True
 
 def startTests(branchName):
-    pass
+    cleanTestEnv()
 
-def loadTestEnv(branchName):
-    subprocess.call("/test-env/exec-files/run-compose.sh " + branchName + " dev", shell=True)
+def cleanTestEnv():
+    subprocess.call("/test-env/exec-files/down-compose.sh", shell=True)
+
+def loadTestEnv():
+    subprocess.call("/test-env/exec-files/run-compose.sh dev", shell=True)
     return True    
 
 @app.route("/test", methods=[ "POST"])
@@ -32,10 +35,10 @@ def test():
     if branchName not in branches: 
         return f'{branchName} not suported to CR'
     commmiterMail =list(data["commits"])[0]["committer"]["email"]
-    pullBranch(branchName) and loadTestEnv(branchName)
-    testLog = startTests(branchName)
-    #mailing.sendMail(commmiterMail, testLog)
-    return testLog.__str__()
+    pullBranch(branchName) and loadTestEnv()
+    startTests(branchName)
+    mailing.sendMail(commmiterMail, "msg")
+    return "ok"
     
 
 if __name__ == "__main__":
