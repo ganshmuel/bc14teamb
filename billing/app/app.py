@@ -115,7 +115,7 @@ class Rates(Resource):
             fileData = []
             for row in ws.rows:
                 if row[0].value != None and row[1].value != None and row[2].value !=None:
-                    fileData.append(row)   
+                    fileData.append(row)  
             for i in range(1, len(fileData)):
                 product_id = fileData[i][0].value
                 rates = fileData[i][1].value
