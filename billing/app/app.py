@@ -112,24 +112,29 @@ class Rates(Resource):
             wb = load_workbook(file)
             ws = wb.active
             wb.save(file)
-            fileData = tuple(ws.rows)
+            fileData = []
+            for row in ws.rows:
+                if row[0].value != None and row[1].value != None and row[2].value !=None:
+                    fileData.append(row)   
             for i in range(1, len(fileData)):
                 product_id = fileData[i][0].value
                 rates = fileData[i][1].value
                 scope = fileData[i][2].value
-
-                sql_where = f"SELECT * FROM Rates WHERE product_id ='{product_id}' AND scope ='{scope}'"
-                cursor.execute(sql_where)
-                isAlreadyExist = cursor.fetchone()
-                lineData = (product_id, rates, scope)
-                if isAlreadyExist == None:
-                    sql_insert = "INSERT INTO Rates (product_id, rate, scope) VALUES (%s, %s, %s)"
-                    cursor.execute(sql_insert, lineData)
-                    dbConnect.commit()
+                if product_id != None or rates != None or scope != None:
+                    sql_where = f"SELECT * FROM Rates WHERE product_id ='{product_id}' AND scope ='{scope}'"
+                    cursor.execute(sql_where)
+                    isAlreadyExist = cursor.fetchone()
+                    lineData = (product_id, rates, scope)
+                    if isAlreadyExist == None:
+                        sql_insert = "INSERT INTO Rates (product_id, rate, scope) VALUES (%s, %s, %s)"
+                        cursor.execute(sql_insert, lineData)
+                        dbConnect.commit()
+                    else:
+                        sql_update = f"UPDATE Rates SET rate ='{rates}' WHERE product_id ='{product_id}' AND scope ='{scope}'"
+                        cursor.execute(sql_update)
+                        dbConnect.commit()
                 else:
-                    sql_update = f"UPDATE Rates SET rate ='{rates}' WHERE product_id ='{product_id}' AND scope ='{scope}'"
-                    cursor.execute(sql_update)
-                    dbConnect.commit()
+                    return {"message": f"{fileName}.xlsx has missing values"}, 
             return {"message": f'Rates from {fileName}.xlsx was updated in DB successfully'}, 200
 
         else:
