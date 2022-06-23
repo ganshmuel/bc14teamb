@@ -2,8 +2,31 @@
 
 declare provider_name
 declare response_code
-declare host="ec2-3-88-220-120.compute-1.amazonaws.com"
+declare host="ec2-54-226-67-144.compute-1.amazonaws.com"
 declare port=8080
+declare package_name=jq
+
+
+# Returns true if Linux distro is Ubuntu
+function os_is_ubuntu {
+	if lsb_release -d | grep -q Ubuntu; then
+		return 0;
+	else
+		return 1;
+	fi
+}
+
+# Check if jq is installed, if not - install it
+function install_jq {
+	if os_is_ubuntu; then
+		if ! dpkg -s $package_name &> /dev/null ;then
+			echo "Package $package_name not found and is needed, will install it now"
+			sudo apt-get -qq install $package_name
+		fi
+    fi
+}
+
+install_jq
 
 function check_response_code {
   if [ $1 -ne $2 ] ; then
