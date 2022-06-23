@@ -55,13 +55,6 @@ function create_provider {
 	provider_id="$(curl -s -H 'Content-Type: application/json' --data "$payload" http://$host:$port/provider/ | jq -r .id)"
 	echo $provider_id
 }
-function create_truck {
-	provider_id=$(create_provider)
-	truck_id="$RANDOM"
-	payload="$(jq --null-input --arg nm "$truck_id" '{"id": $nm , "provider_id": '$truck_provider_id'}')"
-	curl -s -H 'Content-Type: application/json' --data "$payload" http://$host:$port/truck/
-	echo $truck_id
-}
 
 # ----------- POST /Provider -----------
 
