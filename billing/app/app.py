@@ -17,8 +17,8 @@ app_port = os.getenv('INTERNAL_APP_PORT')
 
 dbConnect = mysql.connector.connect(
     # host=db refers to the mysql container, do not change it
-    host="localhost",
-    port=32000,
+    host="db",
+    port=3306,
     user="billdb_owner",
     password="password",
     database="billdb",
@@ -227,4 +227,4 @@ api.add_resource(Rates, '/rates')
 api.add_resource(Bill, '/bill/<provider_id>')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000, debug=False)
+    app.run(host="0.0.0.0", port=app_port, debug=False)
