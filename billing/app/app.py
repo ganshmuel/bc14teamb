@@ -182,8 +182,7 @@ class TruckPost(Resource):
     parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
     parser.add_argument('id', required=True, nullable=False)
 
-
-    def post(self, id ):
+    def post(self):
         args = self.parser.parse_args()
         provider_id = args['provider_id']
 
@@ -205,10 +204,10 @@ class Bill(Resource):
     parser.add_argument('t2', type=str, location='args')
     def get(self, provider_id):
         args = self.parser.parse_args()
-        sql_search_id = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
-        cursor.execute(sql_search_id)
-        isProviderExists = cursor.fetchone()
-        if isProviderExists != None:
+        sql_search_name = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
+        cursor.execute(sql_search_name)
+        provider = cursor.fetchone()
+        if provider != None:
             if args['t1'] == None:
                 startDate = datetime.strptime(datetime.today().replace(day=1,hour=0,minute=0,second=0).strftime('%Y%m%d%H%M%S'), '%Y%m%d%H%M%S')
             else:
@@ -217,13 +216,21 @@ class Bill(Resource):
                 endDate = datetime.strptime(datetime.now().strftime('%Y%m%d%H%M%S'), '%Y%m%d%H%M%S')
             else:
                 endDate = datetime.strptime(args['t2'], '%Y%m%d%H%M%S')
-            name = isProviderExists[0]
-            return {
-            "id":provider_id,
-            "name": name,
-            "from": f"{startDate}",
-            "to": f"{endDate}"
-            }, 200
+            name = provider[0]
+            sql_search_trucks = f"SELECT id FROM Trucks WHERE provider_id = '{provider_id}'"
+            cursor.execute(sql_search_trucks)
+            trucks = cursor.fetchall()
+            numTrucks = len(trucks)
+            if numTrucks != 0:
+                return {
+                "id":provider_id,
+                "name": name,
+                "from": f"{startDate}",
+                "to": f"{endDate}", 
+                "truckCount": numTrucks,
+                }, 200
+            else:
+                return {"message":f"Provider with id: {provider_id} has no recorded trucks"}, 400
         else:
             return {"message":f"No provider exist with id: {provider_id}"}, 400
         
@@ -259,7 +266,7 @@ class TruckGet(Resource):
             return Response("The truck with this id doesn't exist", status=400, mimetype='text')
         else:
             t1 = args['t1']
-            path = WEIGHT_APP_BASE_URL + '/' + id
+            path = WEIGHT_APP_BASE_URL + '/item/' + id
             if t1 is None:
                 return requests.get(path).content
             else:
@@ -270,10 +277,6 @@ class TruckGet(Resource):
                 else:
                     path = path + '&to =' +t2
                     return requests.get(path).content
-
-
-
-
 
 
 api.add_resource(TruckPost, '/truck/')
