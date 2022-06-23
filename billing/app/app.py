@@ -10,6 +10,8 @@ from openpyxl import load_workbook
 import shutil
 from datetime import datetime
 
+WEIGHT_APP_BASE_URL = 'http://localhost:8081:'
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -247,17 +249,27 @@ class UpdateProviderId(Resource):
 
 class TruckGet(Resource):
     parser = reqparse.RequestParser()
-    parser.add.argument('t1', type=str)
+    parser.add_argument('id', required=True, nullable=False)
+    parser.add_argument('t1', type=str)
     parser.add_argument('t2', type=str)
 
-    def get(self,truck_id):
+    def get(self, id):
         args = self.parser.parse_args()
-        truck_id = args['id']
-        if isTruckIdInDb is False:
+        if isTruckIdInDb(id) is False:
             return Response("The truck with this id doesn't exist", status=400, mimetype='text')
-
-
-
+        else:
+            t1 = args['t1']
+            path = WEIGHT_APP_BASE_URL + '/' + id
+            if t1 is None:
+                return requests.get(path).content
+            else:
+                path = path + '/?from=' + t1
+                t2 = args['t2']
+                if t2 is None:
+                    return requests.get(path).content
+                else:
+                    path = path + '&to =' +t2
+                    return requests.get(path).content
 
 
 
