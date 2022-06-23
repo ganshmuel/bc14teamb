@@ -2,7 +2,7 @@
 
 declare provider_name
 declare response_code
-declare host="ec2-3-88-220-120.compute-1.amazonaws.com"
+declare host="localhost"
 declare port=8080
 
 function check_response_code {
@@ -40,6 +40,7 @@ echo "TEST: POST /Provider, positive test"
 generate_provider_name
 # Preapre body
 payload="$(jq --null-input --arg nm "$provider_name" '{"name": $nm}')"
+echo ${payload}
 # Prepare URL
 url="http://$host:$port/provider/"
 # Send request
@@ -85,3 +86,14 @@ check_response_code "200" "${response_code}"
 
 
 #-------------POST / Trucks -------------
+
+
+
+
+
+
+#--------------GET /rates----------------
+# echo "TEST: GET /rates, positive test"
+# url="http://$host:$port/rates"
+# response_code="$(curl -o /dev/null -s -w "%{http_code}\n" -H "Content-Type: application/json" $url)"
+# check_response_code "200" "${response_code}"
