@@ -271,7 +271,7 @@ class TruckGet(Resource):
             return Response("The truck with this id doesn't exist", status=400, mimetype='text')
         else:
             t1 = args['t1']
-            path = WEIGHT_APP_BASE_URL + '/' + id
+            path = WEIGHT_APP_BASE_URL + '/item/' + id
             if t1 is None:
                 return requests.get(path).content
             else:
