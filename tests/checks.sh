@@ -2,11 +2,11 @@
 
 declare provider_name
 declare response_code
-declare host="ec2-3-88-220-120.compute-1.amazonaws.com"
+declare host="ec2-54-226-67-144.compute-1.amazonaws.com"
 declare port=8080
 
 function check_response_code {
-  if [ $1 -ne $2 ] ; then
+  if [[ $1 -ne $2 ]] ; then
 	echo "RESULT: Test failed"
 	echo "RESULT: Expected code $1, got code $2"
 	exit 1
@@ -24,12 +24,20 @@ function generate_provider_name_int {
 	provider_name="$RANDOM";
 }
 
+
 # Create a random provider and return its ID
 function create_provider {
 	generate_provider_name
 	payload="$(jq --null-input --arg nm "$provider_name" '{"name": $nm}')"
 	provider_id="$(curl -s -H 'Content-Type: application/json' --data "$payload" http://$host:$port/provider/ | jq -r .id)"
 	echo $provider_id
+}
+function create_truck {
+	provider_id=$(create_provider)
+	truck_id="$RANDOM"
+	payload="$(jq --null-input --arg nm "$truck_id" '{"id": $nm , "provider_id": '$truck_provider_id'}')"
+	curl -s -H 'Content-Type: application/json' --data "$payload" http://$host:$port/truck/
+	echo $truck_id
 }
 
 # ----------- POST /Provider -----------
@@ -75,7 +83,28 @@ check_response_code "200" "${response_code}"
 
 # ----------- POST /Rates -----------
 
-echo "TEST: POST /rates, positive test"
+
+
+# ----------- PUT //trucks/<truck_id> -----------
+
+echo "TEST: PUT //trucks/<truck_id>, positive test"
+
+# carate a random provider and truck id
+provider_id=$(create_provider)
+truck_id="$RANDOM"
+payload="$(jq --null-input --arg nm "$truck_id" '{"id": $nm , "provider_id": '$provider_id'}')"
+curl -s -H 'Content-Type: application/json' --data "$payload" http://$host:$port/truck/
+
+# Prepare URL
+url=" http://$host:$port/trucks/$truck_id"
+
+# Send request
+response_code="$(curl -X PUT -o /dev/null -s -w "%{http_code}\n" -H "Content-Type: application/json" --data {\"provider_id\":\"$provider_id\"} $url)" 
+
+# Test response
+check_response_code "200" "${response_code}"
+
+# echo "TEST: POST /rates, positive test"
 
 filename="POST_rates_test"
 url="http://$host:$port/rates"
