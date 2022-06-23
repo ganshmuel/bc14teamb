@@ -26,19 +26,40 @@ def get_index():
 
 @app.route('/weight', methods=['POST'])
 def post_weight():
-    direction = int(request.form['direction'])
-    truck = int(request.form['truck'])
-    containers = int(request.form['containers'])
+    direction = str(request.form['direction'])
+    truck = str(request.form['truck'])
+    containers = str(request.form['containers'])
     bruto = int(request.form['bruto'])
-    truckTara = int(request.form['truckTara'])
+    produce = str(request.form['produce'])
+    force = bool(request.form['force'])
     neto = int(request.form['neto'])
-    produce = int(request.form['produce'])
-    datetime2 = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    truckTara = int(request.form['truckTara'])
+    datetime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     mycursor = mydb.cursor()
-    mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto, truckTara, neto, produce) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                     (datetime2, direction, truck, containers, bruto, truckTara, neto, produce))
-    mydb.commit
-    return "OK"
+    if direction == ("in" or "none"):
+        direction_check = mycursor.execute("SELECT direction WHERE truck = (%s) ORDER BY id DESC LIMIT 1", (truck))
+        id = mycursor.execute("SELECT id WHERE truck = (%s) ORDER BY id DESC LIMIT 1", (truck))
+        if direction_check == direction:
+            if force == "False":
+                return Response("Error", status=404, mimetype="text")
+            elif force == "True":
+                #will over-write db
+                mycursor.execute("UPDATE transactions SET bruto = %s WHERE id = %s" , (bruto , id))
+        elif direction == "none" and direction_check == "in":
+            return Response("Error", status=404, mimetype="text")
+        mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                        (datetime, direction, truck, containers, bruto))
+        mydb.commit
+    elif direction == "out":
+        if force == "False":
+            return Response("Error", status=404, mimetype="text")
+        elif force == "True":
+            if direction_check != "in"
+                return Response("Error", status=404, mimetype="text")
+            #will over-write db
+            mycursor.execute("UPDATE transactions SET bruto = %s , neto = %s , truckTara = %s WHERE id = %s" , (bruto , neto , truckTara , id))
+    else:
+        return "Error"
 
 
 @app.route('/weight', methods=['GET'])
@@ -149,12 +170,10 @@ def get_session(id):
     else:
         return Response("Not Found", status=404, mimetype="text")
 
-# @app.route('/unknown', methods=['GET'])
-# def get_unknown():        
-#     return test
-# @app.route('/item/<id>', methods=['GET'])
-# def get_item(id):
-#     return test 
+@app.route('/unknown', methods=['GET'])
+def get_unknown():
+
+    return test
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port='8081')
