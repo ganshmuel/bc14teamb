@@ -30,6 +30,7 @@ COPY --chown=$USER ./app/app.py ./app/app.py
 # the INTERNAL port of the app, inside the container
 
 ENV INTERNAL_APP_PORT=8080
+ENV WEIGHT_HOST=3.68.253.241
 
 HEALTHCHECK --timeout=2s CMD curl --fail http://localhost:${INTERNAL_APP_PORT}/health || exit 1
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import os
+
+import requests as requests
 from flask import Flask, Response
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
@@ -12,6 +14,7 @@ from datetime import datetime
 app = Flask(__name__)
 api = Api(app)
 
+weight_host = os.getenv('WEIGHT_HOST')
 # INTERNAL_APP_PORT is defined in the Dockerfile
 app_port = os.getenv('INTERNAL_APP_PORT')
 
@@ -39,7 +42,7 @@ def nameValidator(name):
 def providerIdValidator(provider_id):
     if not provider_id:
         raise ValueError("Must not be empty provider_id")
-    if int(provider_id) < 10000 and int(provider_id) >999999999 :
+    if int(provider_id) < 10000 and int(provider_id) > 999999999:
         raise ValueError("Must not be >= 10000")
     return provider_id
 
@@ -60,6 +63,7 @@ def isProviderIdInDb(provider_id):
         return False
     return True
 
+
 def isTruckIdInDb(truck_id):
     sql_search_id = f"SELECT * FROM Trucks WHERE id = '{truck_id}'"
     cursor.execute(sql_search_id)
@@ -73,7 +77,12 @@ class HealthGet(Resource):
         try:
             dbConnect.is_connected()
         except mysql.connector.errors.InterfaceError:
-            return {'message': 'Server error, contact your Michael'}, 500
+            return {'message': 'Server error, no connection to database'}, 500
+        try:
+            r = requests.get('http://' + weight_host + ':8081/health')
+            r.raise_for_status()
+        except requests.exceptions.RequestException:
+            return {'message': 'Server error, no connection to weight server'}, 500
         return {'message': 'OK'}, 200
 
 
@@ -114,8 +123,8 @@ class Rates(Resource):
             wb.save(file)
             fileData = []
             for row in ws.rows:
-                if row[0].value != None and row[1].value != None and row[2].value !=None:
-                    fileData.append(row)   
+                if row[0].value != None and row[1].value != None and row[2].value != None:
+                    fileData.append(row)
             for i in range(1, len(fileData)):
                 product_id = fileData[i][0].value
                 rates = fileData[i][1].value
@@ -134,7 +143,7 @@ class Rates(Resource):
                         cursor.execute(sql_update)
                         dbConnect.commit()
                 else:
-                    return {"message": f"{fileName}.xlsx has missing values"}, 
+                    return {"message": f"{fileName}.xlsx has missing values"},
             return {"message": f'Rates from {fileName}.xlsx was updated in DB successfully'}, 200
 
         else:
@@ -146,7 +155,8 @@ class Rates(Resource):
         lastFileLocation.close()
         fileCopy = f"{os.getcwd()}/in/last_rates_file.xlsx"
         shutil.copy(lastFile, fileCopy)
-        return {"message":'last_rates_file.xlsx was generated'}, 200
+        return {"message": 'last_rates_file.xlsx was generated'}, 200
+
 
 class ProviderPut(Resource):
     parser = reqparse.RequestParser()
@@ -195,10 +205,12 @@ class TruckPost(Resource):
         dbConnect.commit()
         return Response('Ok', status=200, mimetype='json')
 
+
 class Bill(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('t1', type=str, location='args')
     parser.add_argument('t2', type=str, location='args')
+
     def get(self, provider_id):
         args = self.parser.parse_args()
         sql_search_id = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
@@ -206,7 +218,9 @@ class Bill(Resource):
         isProviderExists = cursor.fetchone()
         if isProviderExists != None:
             if args['t1'] == None:
-                startDate = datetime.strptime(datetime.today().replace(day=1,hour=0,minute=0,second=0).strftime('%Y%m%d%H%M%S'), '%Y%m%d%H%M%S')
+                startDate = datetime.strptime(
+                    datetime.today().replace(day=1, hour=0, minute=0, second=0).strftime('%Y%m%d%H%M%S'),
+                    '%Y%m%d%H%M%S')
             else:
                 startDate = datetime.strptime(args['t1'], '%Y%m%d%H%M%S')
             if args['t2'] == None:
@@ -215,19 +229,19 @@ class Bill(Resource):
                 endDate = datetime.strptime(args['t2'], '%Y%m%d%H%M%S')
             name = isProviderExists[0]
             return {
-            "id":provider_id,
-            "name": name,
-            "from": f"{startDate}",
-            "to": f"{endDate}"
-            }, 200
+                       "id": provider_id,
+                       "name": name,
+                       "from": f"{startDate}",
+                       "to": f"{endDate}"
+                   }, 200
         else:
-            return {"message":f"No provider exist with id: {provider_id}"}, 400
-        
+            return {"message": f"No provider exist with id: {provider_id}"}, 400
+
 
 class UpdateProviderId(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
-    
+
     def put(self, truck_id):
         args = self.parser.parse_args()
         provider_id = args['provider_id']
@@ -237,11 +251,12 @@ class UpdateProviderId(Resource):
         if isTruckIdInDb(truck_id) is False:
             return Response("This truck doesn't exist in our system", status=400, mimetype='json')
 
-        sql_update_provider = "UPDATE Trucks SET provider_id=%s WHERE id=%s" 
+        sql_update_provider = "UPDATE Trucks SET provider_id=%s WHERE id=%s"
         val = (provider_id, truck_id)
         cursor.execute(sql_update_provider, val)
         dbConnect.commit()
         return Response('Ok', status=200, mimetype='json')
+
 
 api.add_resource(TruckPost, '/truck/')
 api.add_resource(HealthGet, '/health')
