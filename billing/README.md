@@ -34,3 +34,16 @@ Null values?
 
 ```curl -H "Content-Type: application/json" -d '{"name":null}' -X POST http://127.0.0.1:5000/provider```  
 ```curl -H "Content-Type: application/json" -d '{"name":null}' -X PUT http://127.0.0.1:5000/provider/420```
+
+PUT /trucks/<truck_id>:
+
+```curl -H "Content-Type: application/json" -d "{\"provider_id\":\"10001\"} -X PUT http://127.0.0.1:8080/trucks/1```
+
+Empty provider:
+
+```curl -H "Content-Type: application/json" -d "{\"provider_id\":\"\"} -X PUT http://127.0.0.1:8080/trucks/1```
+
+No truck:
+
+```curl -H "Content-Type: application/json" -d "{\"provider_id\":\"10001\"} -X PUT http://127.0.0.1:8080/trucks/```
+

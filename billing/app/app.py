@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import requests
 from flask import Flask, Response
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
@@ -8,6 +9,8 @@ from os import path
 from openpyxl import load_workbook
 import shutil
 from datetime import datetime
+
+WEIGHT_APP_BASE_URL = 'http://localhost:8081:'
 
 app = Flask(__name__)
 api = Api(app)
@@ -179,7 +182,8 @@ class TruckPost(Resource):
     parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
     parser.add_argument('id', required=True, nullable=False)
 
-    def post(self):
+
+    def post(self, id ):
         args = self.parser.parse_args()
         provider_id = args['provider_id']
 
@@ -224,12 +228,62 @@ class Bill(Resource):
             return {"message":f"No provider exist with id: {provider_id}"}, 400
         
 
+class UpdateProviderId(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
+    
+    def put(self, truck_id):
+        args = self.parser.parse_args()
+        provider_id = args['provider_id']
+
+        if isProviderIdInDb(provider_id) is False:
+            return Response("This provider doesn't exist in our system", status=400, mimetype='json')
+        if isTruckIdInDb(truck_id) is False:
+            return Response("This truck doesn't exist in our system", status=400, mimetype='json')
+
+        sql_update_provider = "UPDATE Trucks SET provider_id=%s WHERE id=%s" 
+        val = (provider_id, truck_id)
+        cursor.execute(sql_update_provider, val)
+        dbConnect.commit()
+        return Response('Ok', status=200, mimetype='json')
+
+class TruckGet(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('id', required=True, nullable=False)
+    parser.add_argument('t1', type=str)
+    parser.add_argument('t2', type=str)
+
+    def get(self, id):
+        args = self.parser.parse_args()
+        if isTruckIdInDb(id) is False:
+            return Response("The truck with this id doesn't exist", status=400, mimetype='text')
+        else:
+            t1 = args['t1']
+            path = WEIGHT_APP_BASE_URL + '/' + id
+            if t1 is None:
+                return requests.get(path).content
+            else:
+                path = path + '/?from=' + t1
+                t2 = args['t2']
+                if t2 is None:
+                    return requests.get(path).content
+                else:
+                    path = path + '&to =' +t2
+                    return requests.get(path).content
+
+
+
+
+
+
 api.add_resource(TruckPost, '/truck/')
+api.add_resource(TruckGet, '/truck/<id>')
 api.add_resource(HealthGet, '/health')
 api.add_resource(ProviderPost, '/provider/')
 api.add_resource(ProviderPut, '/provider/<provider_id>')
 api.add_resource(Rates, '/rates')
 api.add_resource(Bill, '/bill/<provider_id>')
+api.add_resource(UpdateProviderId, '/trucks/<truck_id>')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=app_port, debug=False)
