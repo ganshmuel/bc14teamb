@@ -10,7 +10,7 @@ from openpyxl import load_workbook
 import shutil
 from datetime import datetime
 
-WEIGHT_APP_BASE_URL = 'http://localhost:8081:'
+WEIGHT_APP_BASE_URL = 'http://localhost:8081'
 
 app = Flask(__name__)
 api = Api(app)
@@ -48,12 +48,12 @@ def providerIdValidator(provider_id):
     return provider_id
 
 
-def truckLicenseValidator(name):
-    if not name:
+def truckLicenseValidator(id):
+    if not id:
         raise ValueError("Must not be empty string")
-    if len(name) > 255:
+    if len(id) > 10 or len(id) == 0:
         raise ValueError("Must not be longer then 255 charecters")
-    return name
+    return id
 
 
 def isProviderIdInDb(provider_id):
@@ -188,7 +188,7 @@ class ProviderPut(Resource):
 class TruckPost(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
-    parser.add_argument('id', required=True, nullable=False)
+    parser.add_argument('id', required=True, nullable=False, type=truckLicenseValidator)
 
     def post(self):
         args = self.parser.parse_args()
