@@ -9,6 +9,7 @@ RUN echo \
 RUN apt-get --yes update
 RUN apt-get --yes install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 RUN pip3 install flask
+RUN apt-get --yes install jq
 WORKDIR /server
 
 ENTRYPOINT [ "python3", "flaskApp.py"]
