@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import requests
 from flask import Flask, Response
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
@@ -179,7 +180,8 @@ class TruckPost(Resource):
     parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
     parser.add_argument('id', required=True, nullable=False)
 
-    def post(self):
+
+    def post(self, id ):
         args = self.parser.parse_args()
         provider_id = args['provider_id']
 
@@ -243,7 +245,27 @@ class UpdateProviderId(Resource):
         dbConnect.commit()
         return Response('Ok', status=200, mimetype='json')
 
+class TruckGet(Resource):
+    parser = reqparse.RequestParser()
+    parser.add.argument('t1', type=str)
+    parser.add_argument('t2', type=str)
+
+    def get(self,truck_id):
+        args = self.parser.parse_args()
+        truck_id = args['id']
+        if isTruckIdInDb is False:
+            return Response("The truck with this id doesn't exist", status=400, mimetype='text')
+
+
+
+
+
+
+
+
+
 api.add_resource(TruckPost, '/truck/')
+api.add_resource(TruckGet, '/truck/<id>')
 api.add_resource(HealthGet, '/health')
 api.add_resource(ProviderPost, '/provider/')
 api.add_resource(ProviderPut, '/provider/<provider_id>')
