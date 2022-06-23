@@ -190,12 +190,11 @@ class TruckPost(Resource):
     parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
     parser.add_argument('id', required=True, nullable=False)
 
-
-    def post(self, id ):
+    def post(self):
         args = self.parser.parse_args()
         provider_id = args['provider_id']
-
         truck_id = args['id']
+
         if isProviderIdInDb(provider_id) is False:
             return Response("This provider doesn't exist in our system", status=400, mimetype='json')
         if isTruckIdInDb(truck_id) is True:
