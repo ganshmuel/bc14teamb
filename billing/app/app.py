@@ -194,11 +194,31 @@ class TruckPost(Resource):
         return Response('Ok', status=200, mimetype='json')
 
 
+class UpdateProviderId(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
+    
+    def put(self, truck_id):
+        args = self.parser.parse_args()
+        provider_id = args['provider_id']
+
+        if isProviderIdInDb(provider_id) is False:
+            return Response("This provider doesn't exist in our system", status=400, mimetype='json')
+        if isTruckIdInDb(truck_id) is False:
+            return Response("This truck doesn't exist in our system", status=400, mimetype='json')
+
+        sql_update_provider = "UPDATE Trucks SET provider_id=%s WHERE id=%s" 
+        val = (provider_id, truck_id)
+        cursor.execute(sql_update_provider, val)
+        dbConnect.commit()
+        return Response('Ok', status=200, mimetype='json')
+
 api.add_resource(TruckPost, '/truck/')
 api.add_resource(HealthGet, '/health')
 api.add_resource(ProviderPost, '/provider/')
 api.add_resource(ProviderPut, '/provider/<provider_id>')
 api.add_resource(Rates, '/rates')
+api.add_resource(UpdateProviderId, '/trucks/<truck_id>')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=app_port, debug=False)
