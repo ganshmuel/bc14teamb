@@ -7,6 +7,7 @@ import mysql.connector
 from os import path
 from openpyxl import load_workbook
 import shutil
+from datetime import datetime
 
 app = Flask(__name__)
 api = Api(app)
@@ -48,12 +49,10 @@ def truckLicenseValidator(name):
         raise ValueError("Must not be empty string")
     if len(name) > 255:
         raise ValueError("Must not be longer then 255 charecters")
-        return name
+    return name
 
 
 def isProviderIdInDb(provider_id):
-
-
     sql_search_id = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
     cursor.execute(sql_search_id)
     isNameExists = cursor.fetchone()
@@ -170,12 +169,10 @@ class ProviderPut(Resource):
         return {"id": provider_id, "new_name": name}
 
 
-
 class TruckPost(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('provider_id', required=True, nullable=False, type=providerIdValidator)
     parser.add_argument('id', required=True, nullable=False)
-
 
     def post(self):
         args = self.parser.parse_args()
@@ -193,6 +190,34 @@ class TruckPost(Resource):
         dbConnect.commit()
         return Response('Ok', status=200, mimetype='json')
 
+class Bill(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('t1', type=str, location='args')
+    parser.add_argument('t2', type=str, location='args')
+    def get(self, provider_id):
+        args = self.parser.parse_args()
+        sql_search_id = f"SELECT name FROM Provider WHERE id = '{provider_id}'"
+        cursor.execute(sql_search_id)
+        isProviderExists = cursor.fetchone()
+        if isProviderExists != None:
+            if args['t1'] == None:
+                startDate = datetime.strptime(datetime.today().replace(day=1,hour=0,minute=0,second=0).strftime('%Y%m%d%H%M%S'), '%Y%m%d%H%M%S')
+            else:
+                startDate = datetime.strptime(args['t1'], '%Y%m%d%H%M%S')
+            if args['t2'] == None:
+                endDate = datetime.strptime(datetime.now().strftime('%Y%m%d%H%M%S'), '%Y%m%d%H%M%S')
+            else:
+                endDate = datetime.strptime(args['t2'], '%Y%m%d%H%M%S')
+            name = isProviderExists[0]
+            return {
+            "id":provider_id,
+            "name": name,
+            "from": f"{startDate}",
+            "to": f"{endDate}"
+            }, 200
+        else:
+            return {"message":f"No provider exist with id: {provider_id}"}, 400
+        
 
 class UpdateProviderId(Resource):
     parser = reqparse.RequestParser()
@@ -218,6 +243,7 @@ api.add_resource(HealthGet, '/health')
 api.add_resource(ProviderPost, '/provider/')
 api.add_resource(ProviderPut, '/provider/<provider_id>')
 api.add_resource(Rates, '/rates')
+api.add_resource(Bill, '/bill/<provider_id>')
 api.add_resource(UpdateProviderId, '/trucks/<truck_id>')
 
 if __name__ == "__main__":
