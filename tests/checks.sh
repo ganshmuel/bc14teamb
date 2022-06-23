@@ -102,9 +102,9 @@ check_response_code "200" "${response_code}"
 
 
 
-# ----------- PUT //trucks/<truck_id> -----------
+# ----------- PUT /trucks/<truck_id> -----------
 
-echo "TEST: PUT //trucks/<truck_id>, positive test"
+echo "TEST: PUT /trucks/<truck_id>, positive test"
 
 # carate a random provider and truck id
 provider_id=$(create_provider)
@@ -121,7 +121,9 @@ response_code="$(curl -X PUT -o /dev/null -s -w "%{http_code}\n" -H "Content-Typ
 # Test response
 check_response_code "200" "${response_code}"
 
-# echo "TEST: POST /rates, positive test"
+# ----------- POST /rates -----------
+
+echo "TEST: POST /rates, positive test"
 
 filename="POST_rates_test"
 url="http://$host:$port/rates"
