@@ -28,38 +28,45 @@ def get_index():
 def post_weight():
     direction = str(request.form['direction'])
     truck = str(request.form['truck'])
-    containers = str(request.form['containers'])
+    containers = str(request.form['containers'])    
     bruto = int(request.form['bruto'])
     produce = str(request.form['produce'])
     force = bool(request.form['force'])
     neto = int(request.form['neto'])
     truckTara = int(request.form['truckTara'])
-    datetime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    date = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     mycursor = mydb.cursor()
     if direction == ("in" or "none"):
         direction_check = mycursor.execute("SELECT direction WHERE truck = (%s) ORDER BY id DESC LIMIT 1", (truck))
         id = mycursor.execute("SELECT id WHERE truck = (%s) ORDER BY id DESC LIMIT 1", (truck))
         if direction_check == direction:
             if force == "False":
+                #if force=false will generate an error
                 return Response("Error", status=404, mimetype="text")
             elif force == "True":
                 #will over-write db
                 mycursor.execute("UPDATE transactions SET bruto = %s WHERE id = %s" , (bruto , id))
         elif direction == "none" and direction_check == "in":
+            #"none" after "in" will generate error
             return Response("Error", status=404, mimetype="text")
-        mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                        (datetime, direction, truck, containers, bruto))
+        mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce) VALUES (%s, %s, %s, %s, %s, %s)",
+                        (date, direction, truck, containers, bruto, produce))
         mydb.commit
     elif direction == "out":
-        if force == "False":
-            return Response("Error", status=404, mimetype="text")
-        elif force == "True":
-            if direction_check != "in":
+        if direction_check == direction:
+            if force == "False":
+                #if force=false will generate an error
                 return Response("Error", status=404, mimetype="text")
-            #will over-write db
-            mycursor.execute("UPDATE transactions SET bruto = %s , neto = %s , truckTara = %s WHERE id = %s" , (bruto , neto , truckTara , id))
+            elif force == "True":
+                #will over-write db
+                mycursor.execute("UPDATE transactions SET bruto = %s , neto = %s , truckTara = %s WHERE id = %s" , (bruto , neto , truckTara , id))
+        if direction_check != "in":
+                #"out" without an "in" will generate error
+                return Response("Error", status=404, mimetype="text")
+        mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce, neto, truckTara ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                        (date, direction, truck, containers, bruto, produce,neto , truckTara ))
     else:
-        return "Error"
+        return Response("Error", status=404, mimetype="text")
 
 
 @app.route('/weight', methods=['GET'])
@@ -169,11 +176,6 @@ def get_session(id):
         return results_toload    
     else:
         return Response("Not Found", status=404, mimetype="text")
-
-@app.route('/unknown', methods=['GET'])
-def get_unknown():
-
-    return test
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port='8081')
