@@ -54,7 +54,7 @@ def post_weight():
         if force == "False":
             return Response("Error", status=404, mimetype="text")
         elif force == "True":
-            if direction_check != "in"
+            if direction_check != "in":
                 return Response("Error", status=404, mimetype="text")
             #will over-write db
             mycursor.execute("UPDATE transactions SET bruto = %s , neto = %s , truckTara = %s WHERE id = %s" , (bruto , neto , truckTara , id))
