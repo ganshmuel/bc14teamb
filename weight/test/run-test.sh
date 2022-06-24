@@ -1,2 +1,2 @@
 #bin/bash
-echo true > test-log.txt
+echo "true" > test-log.txt
