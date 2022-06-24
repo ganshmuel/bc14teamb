@@ -22,19 +22,26 @@ def startTests(branchName, commiterMail):
     testFolder= f"/test-env/bc14teamb/{branchName}/test"
     if not exists(f"{testFolder}/run-test.sh"):
         return f"{testFolder}/run-test.sh"
+    
     loadTestEnv()
+    
     subprocess.call(f"chmod +x {testFolder}/run-test.sh", shell=True)
-    subprocess.call(f"{testFolder}/run-test.sh", shell=True)
-    with open(f"{testFolder}/test-log.txt") as logFile:
+    subprocess.call(f" bash {testFolder}/run-test.sh {testFolder}" , shell=True)
+    
+    if not exists(f"./test-log.txt"):
+        return f"./test-log.txt ---- not exist"
+    
+    with open(f"./test-log.txt") as logFile:
         res = logFile.readlines()
-        if res[0] == "true":
+        if "true" in res[0]:
             #deploy
             #mailing.sendMail(commiterMail, res.__str__() )
             #live test
             return "pass"
         else:
-            return "faild"
+            return ("faild", res).__str__()
             #mailing.sendMail(commiterMail, res.__str__() )
+            
         
 def cleanTestEnv():
     subprocess.call("/test-env/exec-files/down-compose.sh", shell=True)
@@ -53,6 +60,7 @@ def test():
     commmiterMail =list(data["commits"])[0]["committer"]["email"]
     pullBranch(branchName)
     stValue =startTests(branchName, commmiterMail)
+    cleanTestEnv()
     #mailing.sendMail(commmiterMail, "msg")
     return {"st-value":stValue} 
 
