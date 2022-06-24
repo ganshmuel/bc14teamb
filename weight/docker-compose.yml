@@ -11,18 +11,28 @@ services:
     links:
       - db
     ports:
-      - "${EXTERNAL_APP_PORT}:8081"
-
+      - "${EXIT_PORT}:8081"
+    environment:
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: weight
+    volumes:
+      - ./in:/in
   db:
     container_name: ${DB_NAME}
     platform: "linux/amd64"
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: "weight"
+      MYSQL_USERNAME: root
+      MYSQL_DATABASE: weight
+      MYSQL_PASSWORD: root
     volumes:
       - ./db:/docker-entrypoint-initdb.d/
+      - mydb1:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
+      timeout: 10s
       retries: 10
+volumes:
+      mydb1:

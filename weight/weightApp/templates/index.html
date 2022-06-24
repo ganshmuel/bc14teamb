@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .container {
+            padding: 2px 12px;
+        }
+
+        .card {
+            border: 10px solid rgb(128, 131, 201);
+            border-radius: 15px;
+            padding-left: 5%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <br>
+    <hr>
+    <div class="card">
+        <h4>Registration Form</h4>
+        <form action="/weight" method="POST">
+
+            <label for="force">Force</label><br>
+            <input type="text" name="force" placeholder="Force?"><br>
+            <small>true or false</small><br><br>
+
+            <label for="direction">Direction</label><br>
+            <input type="text" name="direction" placeholder="Enter direction here"><br>
+            <small>in or out</small><br><br>
+
+            <label for="truck">Truck Licence</label><br>
+            <input type="text" name="truck" placeholder="Enter truck's licence here"><br><br>
+
+            <label for="containers">Container's ID</label><br>
+            <input type="text" name="containers" placeholder="Enter container's ID"><br><br>
+
+            <label for="bruto">Bruto Weight</label><br>
+            <input type="number" name="bruto" placeholder="Enter bruto Here"><br>
+            <small>Bruto = Neto (fruit) + Tara (truck) + sum(Tara(Containers))</small><br><br>
+
+            <label for="truckTara">Truck's Tara</label><br>
+            <input type="number" name="truckTara" placeholder="Enter track's tara here"><br>
+            <small>Tara = Only the truck's weight(without the fruits or the container) </small><br><br>
+
+            <label for="neto">Neto Weight</label><br>
+            <input type="number" name="neto" placeholder="Enter neto weight here"><br>
+            <small>Neto = Only the fruit's weight in kg </small><br><br>
+
+            <label for="produce">Produce Type</label><br>
+            <input type="text" name="produce" placeholder="Enter produce type here"><br>
+            <small>The fruit's type (E.g. orange) </small><br><br>
+
+            <input type="submit" value="Submit"><br><br>
+
+        </form>
+    </div>
+</body>
+
+</html>
