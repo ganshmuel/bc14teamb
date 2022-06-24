@@ -18,7 +18,10 @@ def pullBranch(branchName):
     return True
 
 def startTests(branchName):
-    cleanTestEnv()
+    test= False
+    if test:
+        #run merge to main and push
+        cleanTestEnv()
 
 def cleanTestEnv():
     subprocess.call("/test-env/exec-files/down-compose.sh", shell=True)
@@ -37,7 +40,7 @@ def test():
     commmiterMail =list(data["commits"])[0]["committer"]["email"]
     pullBranch(branchName) and loadTestEnv()
     startTests(branchName)
-    mailing.sendMail(commmiterMail, "msg")
+    #mailing.sendMail(commmiterMail, "msg")
     return "ok"
     
 
