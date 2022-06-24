@@ -2,6 +2,7 @@ from re import sub
 from flask import Flask , request, json
 import subprocess 
 from Scripts import mailing
+from os.path import exists
 
 
 
@@ -17,12 +18,24 @@ def pullBranch(branchName):
     subprocess.call("/test-env/exec-files/pull-branch.sh " + branchName , shell=True)
     return True
 
-def startTests(branchName):
-    test= False
-    if test:
-        #run merge to main and push
-        cleanTestEnv()
-
+def startTests(branchName, commiterMail):
+    testFolder= f"/test-env/bc14teamb/{branchName}/test"
+    if not exists(f"{testFolder}/run-test.sh"):
+        return f"{testFolder}/run-test.sh"
+    loadTestEnv()
+    subprocess.call(f"chmod +x {testFolder}/run-test.sh", shell=True)
+    subprocess.call(f"{testFolder}/run-test.sh", shell=True)
+    with open(f"{testFolder}/test-log.txt") as logFile:
+        res = logFile.readlines()
+        if res[0] == "true":
+            #deploy
+            #mailing.sendMail(commiterMail, res.__str__() )
+            #live test
+            return "pass"
+        else:
+            return "faild"
+            #mailing.sendMail(commiterMail, res.__str__() )
+        
 def cleanTestEnv():
     subprocess.call("/test-env/exec-files/down-compose.sh", shell=True)
 
@@ -38,11 +51,14 @@ def test():
     if branchName not in branches: 
         return f'{branchName} not suported to CR'
     commmiterMail =list(data["commits"])[0]["committer"]["email"]
-    pullBranch(branchName) and loadTestEnv()
-    startTests(branchName)
+    pullBranch(branchName)
+    stValue =startTests(branchName, commmiterMail)
     #mailing.sendMail(commmiterMail, "msg")
-    return "ok"
-    
+    return {"st-value":stValue} 
+
+@app.route("/somthing" "get")
+def somthing():
+    return "ok"    
 
 if __name__ == "__main__":
     initiate_git()

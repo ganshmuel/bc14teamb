@@ -7,5 +7,6 @@ docker compose -f "/test-env/bc14teamb/weight/docker-compose.yml" -p "weightdev"
 cd /test-env/bc14teamb/
 git clean -f
 docker system prune -f
+docker volume prune -f
 
 
