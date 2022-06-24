@@ -40,10 +40,31 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10001 ;
 
-show tables;
+INSERT INTO `transactions` 
+(  `datetime` , `direction` , `truck` , `containers` ,
+ `bruto` ,`truckTara` , `neto` ,`produce`)  VALUES
+( "20220622125007", "out","87" , "66,77,88",
+ 891 , 90 , 100 , "bananas");
 
-describe containers_registered;
-describe transactions;
+INSERT INTO `transactions` 
+(  `datetime` , `direction` , `truck` , `containers` ,
+ `bruto` ,`truckTara` , `neto` ,`produce`)  VALUES
+( "20220622115008", "IN", "54" , " 4,5,6",
+ 891 , 33 , 100 , "avokado");
+
+ INSERT INTO `transactions`                               
+(  `datetime` , `direction` , `truck` , `containers` ,
+ `bruto` ,`truckTara` , `neto` ,`produce`)  VALUES
+( "20220621115009", "IN", "54" , " 8,11",
+ 891 , 33 , 100 , "nuts");
+
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-1241232");
+
+
+-- show tables;
+
+-- describe containers_registered;
+-- describe transactions;
 
 
 
