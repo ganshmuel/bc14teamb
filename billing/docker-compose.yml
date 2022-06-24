@@ -6,15 +6,13 @@ services:
     container_name: ${APP_NAME}
     platform: linux/amd64
     build: .
-    links:
-      - db
     ports:
       - "${EXIT_PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - ./in/:/app/in
+      - ./in/:/home/app_user/in
   db:
     container_name: ${DB_NAME}
     platform: linux/amd64

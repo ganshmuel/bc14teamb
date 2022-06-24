@@ -13,5 +13,5 @@ RUN apt-get --yes install jq
 WORKDIR /server
 
 ENTRYPOINT [ "python3", "flaskApp.py"]
-
+ 
 
