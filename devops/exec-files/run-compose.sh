@@ -1,6 +1,6 @@
 #!/bin/bash
-ENV_TYPE=$1
-BRANCH_NAME=$2
+
+BRANCH_NAME=$1
 
 #    cd /test-env/
 #    git clone git@github.com:ganshmuel/bc14teamb.git &&\
@@ -16,13 +16,12 @@ BRANCH_NAME=$2
 #    git checkout main
 #    docker compose --env-file "/test-env/compose-config-files/.env.${BRANCH_NAME}.$ENV_TYPE"  \
 #    -f "/test-env/bc14teamb/${BRANCH_NAME}/docker-compose.yml" -p "${BRANCH_NAME}${ENV_TYPE}" up -d --build
-if [[ $ENV_TYPE == *"dev"* ]];then
-    git checkout billing --
-    docker compose --env-file "/test-env/compose-config-files/.env.billing.$ENV_TYPE"  \
-     -f "/test-env/bc14teamb/billing/docker-compose.yml" -p "billing${ENV_TYPE}" up -d --build
-    git checkout weight --
-    docker compose --env-file "/test-env/compose-config-files/.env.weight.$ENV_TYPE"  \
-     -f "/test-env/bc14teamb/weight/docker-compose.yml" -p "weight${ENV_TYPE}" up -d --build
-    git checkout $BRANCH_NAME
 
-fi
+git checkout billing --
+docker compose --env-file "/test-env/compose-config-files/.env.billing.dev"  \
+ -f "/test-env/bc14teamb/billing/docker-compose.yml" -p "billingdev" up -d --build
+git checkout weight --
+docker compose --env-file "/test-env/compose-config-files/.env.weight.dev"  \
+ -f "/test-env/bc14teamb/weight/docker-compose.yml" -p "weightdev" up -d --build
+git checkout $BRANCH_NAME
+
