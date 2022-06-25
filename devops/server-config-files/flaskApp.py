@@ -10,7 +10,7 @@ from os.path import exists
 app = Flask(__name__)
 
 def loadPordEnv(branchName):
-    subprocess.call(f"/test-env/exec-files/run-compose.sh prod {branchName}", shell=True)
+    subprocess.call(f"/test-env/exec-files/run-compose.sh {branchName}", shell=True)
     
 def pullBranch(branchName):
     subprocess.call("/test-env/exec-files/pull-branch.sh " + branchName , shell=True)
