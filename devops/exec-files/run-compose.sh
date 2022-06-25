@@ -10,13 +10,13 @@ BRANCH_NAME=$2
     git config --global pull.rebase false
     cd /test-env/bc14teamb
     git checkout $BRANCH_NAME --
-if [[ $ENV_TYPE == "prod" ]];then
+if [[ $ENV_TYPE == *"prod"* ]];then
     git pull origin main
     git push origin main
     git checkout main
     docker compose --env-file "/test-env/compose-config-files/.env.${BRANCH_NAME}.$ENV_TYPE"  \
-    -f "/test-env/bc14teamb/billing/docker-compose.yml" -p "billing${ENV_TYPE}" up -d --build
-else 
+    -f "/test-env/bc14teamb//docker-compose.yml" -p "${BRANCH_NAME}${ENV_TYPE}" up -d --build
+elif [[ $ENV_TYPE == *"dev"* ]];then
     git checkout billing --
     docker compose --env-file "/test-env/compose-config-files/.env.billing.$ENV_TYPE"  \
      -f "/test-env/bc14teamb/billing/docker-compose.yml" -p "billing${ENV_TYPE}" up -d --build
