@@ -53,7 +53,7 @@ def cleanTestEnv():
     subprocess.call("/test-env/exec-files/down-compose.sh", shell=True)
 
 def loadTestEnv(branchName):
-    subprocess.call(f"/test-env/exec-files/run-compose.sh dev {branchName}", shell=True)
+    subprocess.call(f"/test-env/exec-files/run-compose.sh {branchName}", shell=True)
     return True    
 
 @app.route("/test", methods=[ "POST"])
