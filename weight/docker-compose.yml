@@ -17,7 +17,7 @@ services:
       DB_PASSWORD: root
       DB_NAME: weight
     volumes:
-      - ./in:/in
+      - ${PATH_APP}/in:/in
   db:
     container_name: ${DB_NAME}
     platform: "linux/amd64"
@@ -28,7 +28,7 @@ services:
       MYSQL_DATABASE: weight
       MYSQL_PASSWORD: root
     volumes:
-      - ./db:/docker-entrypoint-initdb.d/
+      - ${PATH_APP}/db:/docker-entrypoint-initdb.d/
       - mydb1:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
