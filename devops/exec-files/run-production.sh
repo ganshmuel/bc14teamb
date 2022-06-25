@@ -14,3 +14,5 @@ git push origin main
 git checkout main
 docker compose --env-file "/test-env/compose-config-files/.env.${BRANCH_NAME}.prod"  \
 -f "/test-env/bc14teamb/${BRANCH_NAME}/docker-compose.yml" -p "${BRANCH_NAME}prod" up -d --build
+cd /test-env
+rm -rf /test-env/bc14teamb
