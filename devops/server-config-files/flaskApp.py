@@ -31,11 +31,11 @@ def startTests(branchName, commiterMail):
     if not exists(f"{testFolder}/run_test.sh"):
         return f"{testFolder}/run_test.sh not found"
     
-    loadTestEnv()
+    loadTestEnv(branchName)
     
     subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
     #subprocess.call(f" bash {testFolder}/run_test.sh {ip}" , shell=True)
-    time.sleep(10)
+    time.sleep(60)
     subprocess.run([f"{testFolder}/run_test.sh", ip]) 
     if not exists(f"./log-test.txt"):
         return f"./log-test.txt ---- not exist"
@@ -55,8 +55,8 @@ def startTests(branchName, commiterMail):
 def cleanTestEnv():
     subprocess.call("/test-env/exec-files/down-compose.sh", shell=True)
 
-def loadTestEnv():
-    subprocess.call("/test-env/exec-files/run-compose.sh dev", shell=True)
+def loadTestEnv(branchName):
+    subprocess.call(f"/test-env/exec-files/run-compose.sh dev {branchName}", shell=True)
     return True    
 
 @app.route("/test", methods=[ "POST"])
