@@ -29,12 +29,10 @@ services:
       MYSQL_PASSWORD: root
     volumes:
       - ./db:/docker-entrypoint-initdb.d/
-      - mydb_name:/var/lib/mysql
+      - mydb1:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
 volumes:
-  mydb_name:
-    external:
-      name: ${DB_VOL}
+  - mydb1
