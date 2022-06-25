@@ -65,6 +65,7 @@ def test():
         return f'{branchName} not suported to CR'
     commmiterMail =list(data["commits"])[0]["committer"]["email"]
     #pullBranch(branchName)
+    loadTestEnv(branchName)
     stValue =startTests(branchName, commmiterMail)
     cleanTestEnv()
     #mailing.sendMail(commmiterMail, "msg")
