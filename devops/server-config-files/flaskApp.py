@@ -38,6 +38,7 @@ def startTests(branchName, commiterMail):
     with open(f"./log-test.txt") as logFile:
         res = logFile.readlines()
         if "true" in res[0]:
+            cleanTestEnv()
             msg = f"Push {branchName} Passed the tests Successfully\n\n"
             loadPordEnv(branchName)
         else:
@@ -65,7 +66,7 @@ def test():
     #pullBranch(branchName)
     loadTestEnv(branchName)
     stValue =startTests(branchName, commmiterMail)
-    cleanTestEnv()
+    
     #mailing.sendMail(commmiterMail, "msg")
     return stValue 
 
