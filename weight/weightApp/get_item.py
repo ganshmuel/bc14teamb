@@ -10,6 +10,15 @@ import mysql.connector
 from datetime import datetime
 
 
+app = Flask(__name__,)
+mydb = mysql.connector.connect(  # db configuration
+    host="db",
+    user="root",
+    password="root",
+    database="weight"
+)
+
+
 @app.route('/item/<id>/', methods=['GET'])
 def item(id):
       id = request.args.get('id')
