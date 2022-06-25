@@ -9,9 +9,6 @@ from os.path import exists
 
 app = Flask(__name__)
 
-def initiate_git():
-    subprocess.call("/test-env/exec-files/init-git.sh", shell=True)
-
 def loadPordEnv():
     subprocess.call("./run-compose.sh",shell=True)
     
@@ -35,7 +32,7 @@ def startTests(branchName, commiterMail):
     
     subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
     #subprocess.call(f" bash {testFolder}/run_test.sh {ip}" , shell=True)
-    time.sleep(60)
+    time.sleep(10)
     subprocess.run([f"{testFolder}/run_test.sh", ip]) 
     if not exists(f"./log-test.txt"):
         return f"./log-test.txt ---- not exist"
@@ -67,7 +64,7 @@ def test():
     if branchName not in branches: 
         return f'{branchName} not suported to CR'
     commmiterMail =list(data["commits"])[0]["committer"]["email"]
-    pullBranch(branchName)
+    #pullBranch(branchName)
     stValue =startTests(branchName, commmiterMail)
     cleanTestEnv()
     #mailing.sendMail(commmiterMail, "msg")
@@ -78,5 +75,4 @@ def somthing():
     return "ok"    
 
 if __name__ == "__main__":
-    #initiate_git()
     app.run(host="0.0.0.0", port=5000)
