@@ -9,8 +9,8 @@ from os.path import exists
 
 app = Flask(__name__)
 
-def loadPordEnv():
-    subprocess.call("./run-compose.sh",shell=True)
+def loadPordEnv(branchName):
+    subprocess.call(f"./run-compose.sh prod {branchName}",shell=True)
     
 def pullBranch(branchName):
     subprocess.call("/test-env/exec-files/pull-branch.sh " + branchName , shell=True)
@@ -41,7 +41,7 @@ def startTests(branchName, commiterMail):
         res = logFile.readlines()
         if "true" in res[0]:
             msg = f"Push {branchName} Passed the tests Successfully\n\n"
-            #live test
+            loadPordEnv(branchName)
         else:
             msg = f"Push {branchName} Didn't Passed the tests\n\n"
         for line in res: 
