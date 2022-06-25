@@ -19,6 +19,13 @@ def pullBranch(branchName):
     return True
 
 def startTests(branchName, commiterMail):
+    
+    ip ="3.68.253.241:"
+    if branchName == "weight":
+        ip += "8084"
+    elif branchName == "billing":
+        ip += "8083"
+         
     testFolder= f"/test-env/bc14teamb/{branchName}/tests"
     if not exists(f"{testFolder}/run_test.sh"):
         return f"{testFolder}/run_test.sh"
@@ -26,7 +33,7 @@ def startTests(branchName, commiterMail):
     loadTestEnv()
     
     subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
-    subprocess.call(f" bash {testFolder}/run_test.sh {testFolder}" , shell=True)
+    subprocess.call(f" bash {testFolder}/run_test.sh {ip}" , shell=True)
     
     if not exists(f"./log-test.txt"):
         return f"./log-test.txt ---- not exist"
