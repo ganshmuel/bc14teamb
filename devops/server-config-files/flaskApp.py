@@ -1,6 +1,7 @@
 from re import sub
 from flask import Flask , request, json
-import subprocess 
+import subprocess
+import time
 from Scripts import mailing
 from os.path import exists
 
@@ -28,26 +29,27 @@ def startTests(branchName, commiterMail):
          
     testFolder= f"/test-env/bc14teamb/{branchName}/tests"
     if not exists(f"{testFolder}/run_test.sh"):
-        return f"{testFolder}/run_test.sh"
+        return f"{testFolder}/run_test.sh not found"
     
     loadTestEnv()
     
     subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
-    subprocess.call(f" bash {testFolder}/run_test.sh {ip}" , shell=True)
-    
+    #subprocess.call(f" bash {testFolder}/run_test.sh {ip}" , shell=True)
+    time.sleep(10)
+    subprocess.run([f"{testFolder}/run_test.sh", ip]) 
     if not exists(f"./log-test.txt"):
         return f"./log-test.txt ---- not exist"
     
     with open(f"./log-test.txt") as logFile:
         res = logFile.readlines()
         if "true" in res[0]:
-            #deploy
-            #mailing.sendMail(commiterMail, res.__str__() )
+            msg = f"Push {branchName} Passed the tests Successfully\n\n"
             #live test
-            return "pass"
         else:
-            return ("faild", res).__str__()
-            #mailing.sendMail(commiterMail, res.__str__() )
+            msg = f"Push {branchName} Didn't Passed the tests\n\n"
+        for line in res: 
+                msg+=f"{line}\n"
+        return msg
             
         
 def cleanTestEnv():
@@ -67,9 +69,9 @@ def test():
     commmiterMail =list(data["commits"])[0]["committer"]["email"]
     pullBranch(branchName)
     stValue =startTests(branchName, commmiterMail)
-    cleanTestEnv()
+    #cleanTestEnv()
     #mailing.sendMail(commmiterMail, "msg")
-    return {"st-value":stValue} 
+    return stValue 
 
 @app.route("/somthing")
 def somthing():
