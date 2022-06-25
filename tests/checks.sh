@@ -2,7 +2,8 @@
 
 declare provider_name
 declare response_code
-declare host="ec2-54-226-67-144.compute-1.amazonaws.com"
+#declare host="ec2-54-226-67-144.compute-1.amazonaws.com"
+declare host="localhost"
 declare port=8080
 declare package_name=jq
 
@@ -71,6 +72,23 @@ function create_truck {
 	echo $response_code
 }
 
+
+# ----------- POST /truck -----------
+
+echo "TEST: POST /truck, positive test"
+# Generate a random truck's license plate
+#truck_id="$RANDOM"
+# Create provider and truck
+#response_code="$(create_truck $truck_id)"
+
+#Run tests with for different input(see result in)
+(python3 truck_tests/run_truck_tests.py) > truck_tests/tests_results.txt
+#Compare results with expected values
+(python3 truck_tests/check_truck_tests.py) > truck_tests/result.txt
+response_code=`cat truck_tests/result.txt`
+# Validate result
+check_response_code "200" "${response_code}"
+
 # ----------- POST /Provider -----------
 
 echo "TEST: POST /Provider, positive test"
@@ -113,16 +131,7 @@ echo "LOG: Changed provider ID $provider_id name to $provider_name"
 # Test response
 check_response_code "200" "${response_code}"
 
-# ----------- POST /truck -----------
 
-echo "TEST: POST /truck, positive test"
-
-# Generate a random truck's license plate
-truck_id="$RANDOM"
-# Create provider and truck
-response_code="$(create_truck $truck_id)"
-# Validate result
-check_response_code "200" "${response_code}"
 
 # ----------- PUT /trucks/<truck_id> -----------
 
