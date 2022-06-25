@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+     table {
+         border-collapse: collapse;
+        }
+    td{
+        text-align: center;
+    }
+
+    </style>
+    <title>Document</title>
+</head>
+<body style="padding-left: 40px;padding-top:20px ;">
+
+<div >
+    <table border="1" cellpadding="5" cellspacing="5"   >
+        
+
+    {% for row in c %}
+       <tr>
+          {% for d in row %}
+               <td>{{d}}</td>    
+          {% endfor %}
+       </tr>
+       {% endfor %}
+
+
+       <hr>
+       
+  </table>
+</div>
+<p>
+    <div >
+        <table border="1" cellpadding="5" cellspacing="5"   >
+            
+    
+        {% for row in gg %}
+           <tr>
+              {% for d in row %}
+                   <td>{{d}}</td>    
+              {% endfor %}
+           </tr>
+           {% endfor %}
+    
+    
+           <hr>
+           
+      </table>
+    </div>
+
+
+<br>
+
+<br>
+
+     <br>  <br><hr>  <br>  <br>
+     <br>  <br><hr>  <br>  <br>
+
+ ******************************************** end
+</p>
+</html>
