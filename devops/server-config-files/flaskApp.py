@@ -19,19 +19,26 @@ def pullBranch(branchName):
     return True
 
 def startTests(branchName, commiterMail):
-    testFolder= f"/test-env/bc14teamb/{branchName}/test"
-    if not exists(f"{testFolder}/run-test.sh"):
-        return f"{testFolder}/run-test.sh"
+    
+    ip ="3.68.253.241:"
+    if branchName == "weight":
+        ip += "8084"
+    elif branchName == "billing":
+        ip += "8083"
+         
+    testFolder= f"/test-env/bc14teamb/{branchName}/tests"
+    if not exists(f"{testFolder}/run_test.sh"):
+        return f"{testFolder}/run_test.sh"
     
     loadTestEnv()
     
-    subprocess.call(f"chmod +x {testFolder}/run-test.sh", shell=True)
-    subprocess.call(f" bash {testFolder}/run-test.sh {testFolder}" , shell=True)
+    subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
+    subprocess.call(f" bash {testFolder}/run_test.sh {ip}" , shell=True)
     
-    if not exists(f"./test-log.txt"):
-        return f"./test-log.txt ---- not exist"
+    if not exists(f"./log-test.txt"):
+        return f"./log-test.txt ---- not exist"
     
-    with open(f"./test-log.txt") as logFile:
+    with open(f"./log-test.txt") as logFile:
         res = logFile.readlines()
         if "true" in res[0]:
             #deploy
@@ -64,7 +71,7 @@ def test():
     #mailing.sendMail(commmiterMail, "msg")
     return {"st-value":stValue} 
 
-@app.route("/somthing" "get")
+@app.route("/somthing")
 def somthing():
     return "ok"    
 

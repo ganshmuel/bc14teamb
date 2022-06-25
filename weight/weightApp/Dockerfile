@@ -4,8 +4,8 @@ EXPOSE 8081
 
 WORKDIR /app
 
-COPY requirements.txt /app
+COPY . .
+
 RUN pip install -r requirements.txt
 
-COPY weightApp.py /app
 CMD python weightApp.py
