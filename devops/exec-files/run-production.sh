@@ -1,5 +1,5 @@
-
-BRANCH_NAME=$2
+#!/bin/bash
+BRANCH_NAME=$1
 
 cd /test-env/
 git clone git@github.com:ganshmuel/bc14teamb.git &&\
@@ -13,3 +13,4 @@ git pull origin main
 git push origin main
 git checkout main
 docker compose --env-file "/test-env/compose-config-files/.env.${BRANCH_NAME}.prod"  \
+-f "/test-env/bc14teamb/${BRANCH_NAME}/docker-compose.yml" -p "${BRANCH_NAME}prod" up -d --build
