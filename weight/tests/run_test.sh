@@ -9,7 +9,7 @@ for api in "${routes[@]}"
     do
     i=$(curl -s -I "$1"/"$api" | grep HTTP/ | awk {'print '})   # "$1" is for dev team tests!!!
     logs="${api} >>>>>>>>> ${i}"
-    echo ${logs} >> log-test.txt
+    echo "${logs}" >> log-test.txt
     if [[ $i != *"HTTP/1.0 200 OK"* ]]
             then
             result="false"

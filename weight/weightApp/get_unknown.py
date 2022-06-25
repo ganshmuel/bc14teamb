@@ -16,8 +16,9 @@ mydb = mysql.connector.connect(  # db configuration
 @app.route('/unknown/', methods=['GET'])
 def unknown_containers():
     mycursor = mydb.cursor()
-    x = mycursor.execute("SELECT container_id FROM containers_registered WHERE weight IS NULL")
-    print("hello")
-    return x
+    mycursor.execute("SELECT container_id FROM containers_registered WHERE weight IS NULL")
+    x = mycursor.fetchall()
+    y = ''.join(''.join(tup) for tup in x)
+    return y
 
 app = Flask(__name__,)
