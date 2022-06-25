@@ -4,7 +4,7 @@ docker compose -f "/test-env/bc14teamb/billing/docker-compose.yml" -p "billingde
 
 docker compose -f "/test-env/bc14teamb/weight/docker-compose.yml" -p "weightdev"  down 
 
-cd /test-env/bc14teamb/
-git clean -f
+cd /test-env/
+rm -rf ./bc14teamb
 docker system prune -f
 docker volume prune -f

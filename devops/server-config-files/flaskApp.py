@@ -69,7 +69,7 @@ def test():
     commmiterMail =list(data["commits"])[0]["committer"]["email"]
     pullBranch(branchName)
     stValue =startTests(branchName, commmiterMail)
-    #cleanTestEnv()
+    cleanTestEnv()
     #mailing.sendMail(commmiterMail, "msg")
     return stValue 
 
@@ -78,5 +78,5 @@ def somthing():
     return "ok"    
 
 if __name__ == "__main__":
-    initiate_git()
+    #initiate_git()
     app.run(host="0.0.0.0", port=5000)

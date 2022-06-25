@@ -6,7 +6,6 @@ git config --global user.email "citestserer@devops.com"
 git config --global user.name "citestserer"
 git config --global init.defaultBranch main 
 git config --global pull.rebase false
-git branch devops
-git checkout devops
+
 
 
