@@ -1,0 +1,425 @@
+  <html>
+    <head>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+      <script>
+        async function postProvider() {
+            const name = $('#providerInput').val()
+            data = {name}
+
+          const response = await fetch("http://localhost:8080/provider", {
+            method: 'POST',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if(response.statusText === "OK"){
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "OK!",
+                    text: `Provider ${name} was created with id-${resJson.id}`,
+                    icon: "success",
+                    button: "Continue!",
+                  });
+          } 
+          else {
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "ERROR!",
+                    text: `${resJson.message}`,
+                    icon: "error",
+                    button: "Continue!",
+                  });
+          }
+        }
+        async function putProvider() {
+            const name = $('#putProviderNameInput').val()
+            const id = $('#putProviderIdInput').val()
+            data = {name}
+
+          const response = await fetch(`http://localhost:8080/provider/${id}`, {
+            method: 'PUT',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if(response.statusText === "OK"){
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "OK!",
+                    text: `Provider with id-${resJson.id} successfully changed name to ${resJson.new_name}.`,
+                    icon: "success",
+                    button: "Continue!",
+                  });
+          } 
+          else {
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "ERROR!",
+                    text: `${resJson.message}`,
+                    icon: "error",
+                    button: "Continue!",
+                  });
+          }
+        }
+        async function postRates() {
+            const file = $('#ratesInput').val()
+
+            data = {file}
+          const response = await fetch("http://localhost:8080/rates", {
+            method: 'POST',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if(response.statusText === "OK"){
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "OK!",
+                    text: `message: ${resJson.message}`,
+                    icon: "success",
+                    button: "Continue!",
+                  });
+          } 
+          else {
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "ERROR!",
+                    text: `${resJson.message}`,
+                    icon: "error",
+                    button: "Continue!",
+                  });
+          }
+        }
+        async function getRates() {
+
+          const response = await fetch("http://localhost:8080/rates", {
+            method: 'GET',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          if(response.statusText === "OK"){
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "OK!",
+                    text: `message: ${resJson.message}`,
+                    icon: "success",
+                    button: "Continue!",
+                  });
+          } 
+          else {
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "ERROR!",
+                    text: `${resJson.message}`,
+                    icon: "error",
+                    button: "Continue!",
+                  });
+          }
+        }
+        async function postTruck() {
+            const tuckId = $('#truckIdInput').val()
+            const providerId = $('#providerIdInput').val()
+            data = {
+              provider_id: providerId, 
+              id: tuckId
+            }
+          const response = await fetch("http://localhost:8080/truck", {
+            method: 'POST',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if(response.statusText === "OK"){
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "OK!",
+                    text: `Truck was registered successfully!`,
+                    icon: "success",
+                    button: "Continue!",
+                  });
+          } 
+          else {
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "ERROR!",
+                    text: `${resJson.message}`,
+                    icon: "error",
+                    button: "Continue!",
+                  });
+          }
+        }
+        async function putTruck() {
+            const truckId = $('#putTruckIdInput').val()
+            const provider_id = $('#putTruckProviderIn').val()
+            data = {provider_id}
+          const response = await fetch(`http://localhost:8080/trucks/${truckId}`, {
+            method: 'PUT',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if(response.statusText === "OK"){
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "OK!",
+                    text: `Truck with id-${truckId} registered to provider with id-${provider_id} successfully!`,
+                    icon: "success",
+                    button: "Continue!",
+                  });
+          } 
+          else {
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "ERROR!",
+                    text: `${resJson.message}`,
+                    icon: "error",
+                    button: "Continue!",
+                  });
+          }
+        }
+        async function getBill() {
+            const ProviderId = $('#getBillProviderId').val()
+            const from = $('#getBillFrom').val()
+            const to = $('#getBillTo').val()
+
+          if(!to && !from){
+            const response = await fetch(`http://localhost:8080/bill/${ProviderId}`, {
+            method: 'GET',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          if(response.statusText === "OK"){
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "OK!",
+                    icon: "success",
+                    text: `
+                    id - ${resJson.id}
+                    name - ${resJson.name}
+                    from - ${resJson.from}
+                    to - ${resJson.to}
+                    truckCount - ${resJson.truckCount}
+                    sessionCount - ${resJson.sessionCount}
+                    `,
+                    button: "Continue!",
+                  });
+          } 
+          else {
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "ERROR!",
+                    text: `${resJson.message}`,
+                    icon: "error",
+                    button: "Continue!",
+                  });
+          }
+          }
+          else {
+            const response = await fetch(`http://localhost:8080/bill/${ProviderId}?from=${from}&to=${to}`, {
+            method: 'GET',
+            mode: 'cors', 
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          if(response.statusText === "OK"){
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "OK!",
+                    icon: "success",
+                    text: `
+                    id - ${resJson.id}
+                    name - ${resJson.name}
+                    from - ${resJson.from}
+                    to - ${resJson.to}
+                    truckCount - ${resJson.truckCount}
+                    sessionCount - ${resJson.sessionCount}
+                    `,
+                    button: "Continue!",
+                  });
+          } 
+          else {
+            resJson = await response.json()
+            console.log(resJson);
+            swal({
+                    title: "ERROR!",
+                    text: `${resJson.message}`,
+                    icon: "error",
+                    button: "Continue!",
+                  });
+          }
+          }
+
+        } 
+
+        async function getHealth() {
+
+      const response = await fetch("http://localhost:8080/health", {
+        method: 'GET',
+        mode: 'cors', 
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if(response.statusText === "OK"){
+        resJson = await response.json()
+        console.log(resJson);
+        swal({
+                title: "OK!",
+                text: `message: ${resJson.message}`,
+                icon: "success",
+                button: "Continue!",
+              });
+      } 
+      else {
+        resJson = await response.json()
+        console.log(resJson);
+        swal({
+                title: "ERROR!",
+                text: `${resJson.message}`,
+                icon: "error",
+                button: "Continue!",
+              });
+      }
+}
+      </script>
+    </head>
+  <body>
+    
+    <h1 style="text-align: center; margin-bottom: 50px;">Gan Shmuel - Billing App</h1>
+
+    <h3 style="text-align: center; margin-bottom: 8px 8px;">Post Provider:</h1>
+    <div style="display: flex; justify-content: center">
+      <form>
+        <label>Provider Name:</label>
+        <input type="text" class="form-control" id="providerInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
+        <button type="button" class="btn btn-primary" style= "display: block; width: 300px; margin: 8px 5px;" onclick=postProvider()>Add New Provider</button>
+      </form>
+    </div>
+
+    <h3 style="text-align: center; margin-bottom: 8px 8px;">Put Provider:</h1>
+      <div style="display: flex; justify-content: center">
+        <form>
+          <label>Provider New Name:</label>
+          <input type="text" class="form-control" id="putProviderNameInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
+          <label>Provider ID:</label>
+          <input type="text" class="form-control" id="putProviderIdInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
+          <button type="button" class="btn btn-primary" style= "display: block; width: 300px; margin: 8px 5px;" onclick=putProvider()>Update Provider Name</button>
+        </form>
+      </div>
+
+    <h3 style="text-align: center;">Post Rates:</h1>
+      <div style="display: flex; justify-content: center">
+        <form id="inform" action="/api/chat" method="POST">
+          <label>File Name:</label>
+          <input style= "display: block; width: 300px;" id="ratesInput" type=text>
+          <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=postRates()>Update Rates</button>
+        </form>
+      </div>
+
+      <h3 style="text-align: center;">Get Rates:</h1>
+        <div style="display: flex; justify-content: center">
+            <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=getRates()>Get Latest Rates</button>
+          </form>
+        </div>
+
+        <h3 style="text-align: center;">Post Truck:</h1>
+          <div style="display: flex; justify-content: center; ">
+            <form >
+                <label>Truck Id:</label>
+                <input style= "display: block; width: 300px;" id="truckIdInput" type=text>
+                <label >Provider Id:</label>
+                <input style= "display: block; width: 300px;" id="providerIdInput" type=text>
+                <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=postTruck()>Register Truck</button>
+              </div>
+              
+            </form>
+          </div>
+
+          <h3 style="text-align: center;">Put Truck:</h1>
+          <div style="display: flex; justify-content: center; ">
+            <form >
+                <label>Truck Id:</label>
+                <input style= "display: block; width: 300px;" id="putTruckIdInput" type=text>
+                <label >Provider Id:</label>
+                <input style= "display: block; width: 300px;" id="putTruckProviderIn" type=text>
+                <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=putTruck()>Register Truck to Provider</button>
+              </div>
+              
+            </form>
+          </div>
+
+          <h3 style="text-align: center;">Get Bill:</h1>
+            <div style="display: flex; justify-content: center;">
+              <form >
+                  <label>Provider Id:</label>
+                  <input style= "display: block; width: 300px;" id="getBillProviderId" type=text>
+                  <label>*From:</label>
+                  <input style= "display: block; width: 300px;" id="getBillFrom" type=text>
+                  <label>*To:</label>
+                  <input style= "display: block; width: 300px;" id="getBillTo" type=text>
+                  <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=getBill()>Get Provider Bill</button>
+                </div>
+              </form>
+            </div>
+
+            <h3 style="text-align: center;">Get Health:</h1>
+              <div style="display: flex; justify-content: center;">
+                <form >
+                    <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=getHealth()>Get Health</button>
+                  </div>
+                </form>
+              </div>
+    </body>
+  </body>
+  
+</html>

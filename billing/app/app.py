@@ -2,7 +2,7 @@
 
 import os
 import requests
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 from os import path
@@ -72,7 +72,10 @@ def isTruckIdInDb(truck_id):
         return False
     return True
 
-
+@app.route("/", methods=["GET"])
+def main():
+    return render_template("index.html")
+    
 class HealthGet(Resource):
     def get(self):
         try:
@@ -114,9 +117,9 @@ class Rates(Resource):
     def post(self):
         args = self.parser.parse_args()
         fileName = args['file']
-        file = f'{os.getcwd()}/in/{fileName}.xlsx'
+        file = f'in/{fileName}.xlsx'
         if path.exists(file):
-            f = open(f'{os.getcwd()}/in/last-file.txt', 'w')
+            f = open(f'in/last-file.txt', 'w')
             f.write(file)
             f.close()
             wb = load_workbook(file)
@@ -151,12 +154,17 @@ class Rates(Resource):
             return {"message": f'{fileName}.xlsx not exist, please provide existing excel file.'}, 400
 
     def get(self):
-        lastFileLocation = open(f'{os.getcwd()}/in/last-file.txt', "r")
-        lastFile = lastFileLocation.read()
-        lastFileLocation.close()
-        fileCopy = f"{os.getcwd()}/in/last_rates_file.xlsx"
-        shutil.copy(lastFile, fileCopy)
-        return {"message": 'last_rates_file.xlsx was generated'}, 200
+        file = f'in/last-file.txt'
+        if path.exists(file):
+            lastFileLocation = open(f'in/last-file.txt', "r")
+            lastFile = lastFileLocation.read()
+            lastFileLocation.close()
+            fileCopy = f"in/last_rates_file.xlsx"
+            shutil.copy(lastFile, fileCopy)
+            return {"message": 'last_rates_file.xlsx was generated'}, 200
+        else:
+            return {"message": 'Rates was not posted yet, you can get rates after your first post.'}, 400
+      
 
 
 class ProviderPut(Resource):
@@ -171,13 +179,13 @@ class ProviderPut(Resource):
         cursor.execute(sql)
         out = cursor.fetchone()
         if out == None:
-            return Response("Provider with this id doesn' exists ", status=400, mimetype='text')
+            return {"message": "Provider with this id doesn' exists"}, 400
 
         sql = f"SELECT name FROM Provider WHERE name = '{name}'"
         cursor.execute(sql)
         out = cursor.fetchone()
         if out != None:
-            return Response('Provider with this name already exists ', status=400, mimetype='text')
+            return {"message": 'Provider with this name already exists'}, 400
         sql = "UPDATE Provider SET name = %s WHERE id = %s"
         val = (name, provider_id)
         cursor.execute(sql, val)
@@ -196,21 +204,21 @@ class TruckPost(Resource):
         truck_id = args['id']
 
         if isProviderIdInDb(provider_id) is False:
-            return Response("This provider doesn't exist in our system", status=400, mimetype='json')
+            return {"message": "This provider doesn't exist in our system"}, 400
         if isTruckIdInDb(truck_id) is True:
-            return Response("This truck is already  in our system", status=400, mimetype='json')
+            return {"message": "This truck is already in our system"}, 400
 
         sql_insert_name = "INSERT INTO Trucks (id, provider_id) VALUES (%s, %s)"
         val = (truck_id, provider_id)
         cursor.execute(sql_insert_name, val)
         dbConnect.commit()
-        return Response('Ok', status=200, mimetype='json')
+        return {"message": "OK"}, 200
 
 
 class Bill(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('t1', type=str, location='args')
-    parser.add_argument('t2', type=str, location='args')
+    parser.add_argument('from', type=str, location='args')
+    parser.add_argument('to', type=str, location='args')
 
     def get(self, provider_id):
         args = self.parser.parse_args()
@@ -218,20 +226,30 @@ class Bill(Resource):
         cursor.execute(sql_search_name)
         provider = cursor.fetchone()
         if provider != None:
-            if args['t1'] == None:
+            if args['from'] == None:
                 startDate = datetime.strptime(
                     datetime.today().replace(day=1, hour=0, minute=0, second=0).strftime('%Y%m%d%H%M%S'),
                     '%Y%m%d%H%M%S')
             else:
-                startDate = datetime.strptime(args['t1'], '%Y%m%d%H%M%S')
-            if args['t2'] == None:
+                startDate = datetime.strptime(args['from'], '%Y%m%d%H%M%S')
+            if args['to'] == None:
                 endDate = datetime.strptime(datetime.now().strftime('%Y%m%d%H%M%S'), '%Y%m%d%H%M%S')
             else:
-                endDate = datetime.strptime(args['t2'], '%Y%m%d%H%M%S')
+                endDate = datetime.strptime(args['to'], '%Y%m%d%H%M%S')
             name = provider[0]
             sql_search_trucks = f"SELECT id FROM Trucks WHERE provider_id = '{provider_id}'"
             cursor.execute(sql_search_trucks)
             trucks = cursor.fetchall()
+            sessions=[]
+            for id in trucks:
+                # res = requests.get(f"{WEIGHT_APP_BASE_URL}/truck/{id}")
+                # if res.status_code < 200 or res.status_code > 200:
+                #     return {"message":f"server was unable to calculate session count due to http request went wrong"}, 500
+                # else:
+                #     resJson = res.json()
+                #     sessions = sessions + resJson['sessions']
+                    sessions = sessions + [1, 2, 3,]
+            numSessions = len(sessions)
             numTrucks = len(trucks)
             if numTrucks != 0:
                 return {
@@ -240,6 +258,7 @@ class Bill(Resource):
                 "from": f"{startDate}",
                 "to": f"{endDate}", 
                 "truckCount": numTrucks,
+                "sessionCount": numSessions
                 }, 200
             else:
                 return {"message":f"Provider with id: {provider_id} has no recorded trucks"}, 400
@@ -256,15 +275,15 @@ class UpdateProviderId(Resource):
         provider_id = args['provider_id']
 
         if isProviderIdInDb(provider_id) is False:
-            return Response("This provider doesn't exist in our system", status=400, mimetype='json')
+            return {"message": "This provider doesn't exist in our system"}, 400
         if isTruckIdInDb(truck_id) is False:
-            return Response("This truck doesn't exist in our system", status=400, mimetype='json')
+            return {"message": "This truck doesn't exist in our system"}, 400
 
         sql_update_provider = "UPDATE Trucks SET provider_id=%s WHERE id=%s"
         val = (provider_id, truck_id)
         cursor.execute(sql_update_provider, val)
         dbConnect.commit()
-        return Response('Ok', status=200, mimetype='json')
+        return {"message": 'Ok'}, 200
 
 
 class TruckGet(Resource):

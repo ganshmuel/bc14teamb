@@ -26,6 +26,7 @@ COPY --chown=$USER ./app/requirements.txt ./app/requirements.txt
 RUN pip install --no-cache-dir -r ./app/requirements.txt
 
 COPY --chown=$USER ./app/app.py ./app/app.py
+COPY --chown=$USER ./app/templates ./app/templates
 
 # the INTERNAL port of the app, inside the container
 
