@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `containers_registered` (
 
 CREATE TABLE IF NOT EXISTS `transactions` (
   `id` int(12) NOT NULL AUTO_INCREMENT,
-  `datetime` datetime DEFAULT NULL,
+  `datetime` varchar(50) DEFAULT NULL,
   `direction` varchar(10) DEFAULT NULL,
   `truck` varchar(50) DEFAULT NULL,
   `containers` varchar(10000) DEFAULT NULL,
@@ -58,7 +58,13 @@ INSERT INTO `transactions`
 ( "20220621115009", "IN", "54" , " 8,11",
  891 , 33 , 100 , "nuts");
 
-INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-1241232");
+INSERT INTO `containers_registered` (`unit`, `container_id`, `weight`)  VALUES ( "kg", "C-1241232", "4564");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "lbs", "C-12412");
+INSERT INTO `containers_registered` (`unit`, `container_id`, `weight`)  VALUES ( "lbs", "C-124d2", "214097");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-124232");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-1232");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "lbs", "C-12432");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-11232");
 
 
 -- show tables;
