@@ -10,7 +10,7 @@ from os.path import exists
 app = Flask(__name__)
 
 def loadPordEnv(branchName):
-    subprocess.call(f"./run-compose.sh prod {branchName}",shell=True)
+    subprocess.call(f"/test-env/exec-files/run-compose.sh prod {branchName}", shell=True)
     
 def pullBranch(branchName):
     subprocess.call("/test-env/exec-files/pull-branch.sh " + branchName , shell=True)
@@ -27,8 +27,6 @@ def startTests(branchName, commiterMail):
     testFolder= f"/test-env/bc14teamb/{branchName}/tests"
     if not exists(f"{testFolder}/run_test.sh"):
         return f"{testFolder}/run_test.sh not found"
-    
-    loadTestEnv(branchName)
     
     subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
     #subprocess.call(f" bash {testFolder}/run_test.sh {ip}" , shell=True)
