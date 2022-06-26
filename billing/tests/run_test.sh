@@ -171,4 +171,4 @@ echo "$tests_success" >> log-test.txt
 
 for KEY in "${!tests[@]}"; do
     printf "%s --> %s\n" "$KEY" "${tests[$KEY]}"
-done | tee log-test.txt
+done | tee --append log-test.txt
