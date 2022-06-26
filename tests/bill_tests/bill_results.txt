@@ -1,0 +1,2 @@
+{'id': '10034', 'name': 'timfyygikg', 'from': '2022-06-01 00:00:00', 'to': '2022-06-26 07:59:30', 'truckCount': 2, 'sessionCount': 6}
+{'id': '10034', 'name': 'timfyygikg', 'from': '2022-06-01 00:00:00', 'to': '', 'truckCount': '2', 'sessionCount': '6', 'products': [], 'total': '0'}
