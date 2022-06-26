@@ -77,17 +77,33 @@ function create_truck {
 
 echo "TEST: POST /truck, positive test"
 # Generate a random truck's license plate
-#truck_id="$RANDOM"
+truck_id="$RANDOM"
 # Create provider and truck
-#response_code="$(create_truck $truck_id)"
+response_code="$(create_truck $truck_id)"
 
 #Run tests with for different input(see result in)
-(python3 truck_tests/run_truck_tests.py) > truck_tests/tests_results.txt
+#(python3 truck_tests/run_truck_tests.py) > truck_tests/tests_results.txt
 #Compare results with expected values
-(python3 truck_tests/check_truck_tests.py) > truck_tests/result.txt
-response_code=`cat truck_tests/result.txt`
+#(python3 truck_tests/check_truck_tests.py) > truck_tests/result.txt
+#response_code=`cat truck_tests/result.txt`
+# Validate result
+#check_response_code "200" "${response_code}"
+
+
+
+#-------------GET / BILL ---------------
+
+echo "TEST: GET / BILL, positive test"
+
+
+(python3 bill_tests/run_bill_tests.py) > bill_tests/bill_results.txt
+#Compare results with expected values
+(python3 bill_tests/check_bill_tests.py) > bill_tests/result.txt
+response_code=`cat bill_tests/result.txt`
 # Validate result
 check_response_code "200" "${response_code}"
+
+
 
 # ----------- POST /Provider -----------
 
@@ -142,22 +158,14 @@ echo "TEST: PUT /trucks/<truck_id>, positive test"
 # Generate a random truck's license plate
 truck_id="$RANDOM"
 # Create provider and truck
-response_code="$(create_truck $truck_id)"
+# Create new provider
+provider_id=$(create_provider)
+response_code="$(create_truck $provider_id $truck_id)"
 # Validate result
 check_response_code "200" "${response_code}"
 
-# Update truck
 
-# Prepare URL
-url=" http://$host:$port/trucks/$truck_id"
-# Create new provider
-provider_id=$(create_provider)
-# Preapre body
-payload="$(jq --null-input --arg pid "$provider_id" '{"provider_id": $pid}')"
-# Send request
-response_code="$(curl -X PUT -o /dev/null -s -w "%{http_code}\n" -H "Content-Type: application/json" --data "$payload" $url)" 
-# Test response
-check_response_code "200" "${response_code}"
+
 
 # ----------- POST /rates -----------
 
@@ -175,7 +183,21 @@ echo "TEST: GET /rates, positive test"
 
 curl -s "http://$host:$port/rates" | jq -r .message | grep -q "was generated"
 
+
+# Update truck
+echo "TEST: PUT //trucks/<truck_id>, positive test"
+# carate a random provider and truck id
+provider_id=$(create_provider)
+truck_id="$RANDOM"
+payload="$(jq --null-input --arg nm "$truck_id" '{"id": $nm , "provider_id": '$provider_id'}')"
+curl -s -H 'Content-Type: application/json' --data "$payload" http://$host:$port/truck/
+# Prepare URL
+url=" http://$host:$port/trucks/$truck_id"
+# Send request
+response_code="$(curl -X PUT -o /dev/null -s -w "%{http_code}\n" -H "Content-Type: application/json" --data {\"provider_id\":\"$provider_id\"} $url)"
+# Test response
+check_response_code "200" "${response_code}"
+
+
 check_response_code 0 $?
 
-
-#-------------POST / Trucks -------------
