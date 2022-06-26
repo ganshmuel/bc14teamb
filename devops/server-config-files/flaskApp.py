@@ -60,7 +60,6 @@ def test():
     if branchName not in branches: 
         return f'{branchName} not suported to CR'
     commiterMail =list(data["commits"])[0]["committer"]["email"]
-    pullBranch(branchName)
     loadTestEnv(branchName)
     stValue =startTests(branchName)
     mailing.sendMail(commiterMail, stValue)
@@ -70,9 +69,6 @@ def test():
 def checkStatus():
     return "ok"
 
-@app.route("/dashboard")
-def dashboard():
-    return  render_template("index.html")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
