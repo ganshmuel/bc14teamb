@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 
+
 def main():
-    test_file = open('./billing/tests/test_results.txt')
+    test_file = open('test_results.txt')
     result = 'true'
     while True:
         line= test_file.readline()
@@ -18,7 +19,7 @@ def main():
 
     print(result)
     test_file.close()
-    test_file = open('./billing/tests/test_results.txt')
+    test_file = open('test_results.txt')
     test_name = ''
     test_result = ''
     while True:
