@@ -21,8 +21,8 @@ __pycache__/
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
-.devops/key
+./devops/key
 .idea/**/shelfdevops/key
-
+./devops/server-config-files/log-test.txt
 
 .idea/**/shelf
