@@ -12,12 +12,12 @@ app = Flask(__name__)
 
 def loadPordEnv(branchName):
     subprocess.call(f"/test-env/exec-files/run-production.sh {branchName}", shell=True)
-    
-def pullBranch(branchName):
-    subprocess.call("/test-env/exec-files/pull-branch.sh " + branchName , shell=True)
-    return True
 
-def startTests(branchName, commiterMail):
+def loadTestEnv(branchName):
+    subprocess.call(f"/test-env/exec-files/run-compose.sh {branchName}", shell=True)
+    return True    
+
+def startTests(branchName):
     
     ip ="3.68.253.241:"
     if branchName == "weight":
@@ -30,7 +30,6 @@ def startTests(branchName, commiterMail):
         return f"{testFolder}/run_test.sh not found"
     
     subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
-    #subprocess.call(f" bash {testFolder}/run_test.sh {ip}" , shell=True)
     time.sleep(10)
     subprocess.run([f"{testFolder}/run_test.sh", ip]) 
     if not exists(f"./log-test.txt"):
@@ -52,9 +51,6 @@ def startTests(branchName, commiterMail):
 def cleanTestEnv():
     subprocess.call("/test-env/exec-files/down-compose.sh", shell=True)
 
-def loadTestEnv(branchName):
-    subprocess.call(f"/test-env/exec-files/run-compose.sh {branchName}", shell=True)
-    return True    
 
 @app.route("/test", methods=[ "POST"])
 def test():
@@ -63,13 +59,13 @@ def test():
     branchName =data["ref"].partition("refs/heads/")[2]  
     if branchName not in branches: 
         return f'{branchName} not suported to CR'
-    commmiterMail =list(data["commits"])[0]["committer"]["email"]
-    #pullBranch(branchName)
+    commiterMail =list(data["commits"])[0]["committer"]["email"]
+    pullBranch(branchName)
     loadTestEnv(branchName)
-    stValue =startTests(branchName, commmiterMail)
-    
-    #mailing.sendMail(commmiterMail, "msg")
+    stValue =startTests(branchName)
+    mailing.sendMail(commiterMail, stValue)
     return stValue 
+
 @app.route("/checkStatus")
 def checkStatus():
     return "ok"
