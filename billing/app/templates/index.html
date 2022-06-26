@@ -337,88 +337,100 @@
     
     <h1 style="text-align: center; margin-bottom: 50px;">Gan Shmuel - Billing App</h1>
 
-    <h3 style="text-align: center; margin-bottom: 8px 8px;">Post Provider:</h1>
-    <div style="display: flex; justify-content: center">
-      <form>
-        <label>Provider Name:</label>
-        <input type="text" class="form-control" id="providerInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
-        <button type="button" class="btn btn-primary" style= "display: block; width: 300px; margin: 8px 5px;" onclick=postProvider()>Add New Provider</button>
-      </form>
+    <div style="height: 400; display: flex; flex-direction: column; justify-content: center" class="card">
+      <h3 style="text-align: center; margin-bottom: 8px 8px;">Post Provider:</h1>
+        <div style="display: flex; justify-content: center">
+          <form>
+            <label>Provider Name:</label>
+            <input type="text" class="form-control" id="providerInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
+            <button type="button" class="btn btn-primary" style= "display: block; width: 300px; margin: 8px 5px;" onclick=postProvider()>Add New Provider</button>
+          </form>
+        </div>
+    </div>
+    
+    <div style="height: 400; display: flex; flex-direction: column; justify-content: center" class="card">
+      <h3 style="text-align: center; margin-bottom: 8px 8px;">Put Provider:</h1>
+        <div style="display: flex; justify-content: center">
+          <form>
+            <label>Provider New Name:</label>
+            <input type="text" class="form-control" id="putProviderNameInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
+            <label>Provider ID:</label>
+            <input type="text" class="form-control" id="putProviderIdInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
+            <button type="button" class="btn btn-primary" style= "display: block; width: 300px; margin: 8px 5px;" onclick=putProvider()>Update Provider Name</button>
+          </form>
+        </div>
+    </div>
+   
+    <div style="height: 400; display: flex; flex-direction: column; justify-content: center" class="card">
+      <h3 style="text-align: center;">Post Rates:</h1>
+        <div style="display: flex; justify-content: center">
+          <form id="inform" action="/api/chat" method="POST">
+            <label>File Name:</label>
+            <input style= "display: block; width: 300px;" id="ratesInput" type=text>
+            <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=postRates()>Update Rates</button>
+          </form>
+        </div>
     </div>
 
-    <h3 style="text-align: center; margin-bottom: 8px 8px;">Put Provider:</h1>
-      <div style="display: flex; justify-content: center">
-        <form>
-          <label>Provider New Name:</label>
-          <input type="text" class="form-control" id="putProviderNameInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
-          <label>Provider ID:</label>
-          <input type="text" class="form-control" id="putProviderIdInput" style= "display: block; width: 300px; margin: 8px 5px;" type=application/json>
-          <button type="button" class="btn btn-primary" style= "display: block; width: 300px; margin: 8px 5px;" onclick=putProvider()>Update Provider Name</button>
-        </form>
-      </div>
-
-    <h3 style="text-align: center;">Post Rates:</h1>
-      <div style="display: flex; justify-content: center">
-        <form id="inform" action="/api/chat" method="POST">
-          <label>File Name:</label>
-          <input style= "display: block; width: 300px;" id="ratesInput" type=text>
-          <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=postRates()>Update Rates</button>
-        </form>
-      </div>
-
+    <div style="height: 400; display: flex; flex-direction: column; justify-content: center" class="card">
       <h3 style="text-align: center;">Get Rates:</h1>
         <div style="display: flex; justify-content: center">
             <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=getRates()>Get Latest Rates</button>
           </form>
         </div>
+    </div>
 
-        <h3 style="text-align: center;">Post Truck:</h1>
-          <div style="display: flex; justify-content: center; ">
-            <form >
-                <label>Truck Id:</label>
-                <input style= "display: block; width: 300px;" id="truckIdInput" type=text>
-                <label >Provider Id:</label>
-                <input style= "display: block; width: 300px;" id="providerIdInput" type=text>
-                <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=postTruck()>Register Truck</button>
-              </div>
-              
-            </form>
-          </div>
-
-          <h3 style="text-align: center;">Put Truck:</h1>
-          <div style="display: flex; justify-content: center; ">
-            <form >
-                <label>Truck Id:</label>
-                <input style= "display: block; width: 300px;" id="putTruckIdInput" type=text>
-                <label >Provider Id:</label>
-                <input style= "display: block; width: 300px;" id="putTruckProviderIn" type=text>
-                <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=putTruck()>Register Truck to Provider</button>
-              </div>
-              
-            </form>
-          </div>
-
-          <h3 style="text-align: center;">Get Bill:</h1>
-            <div style="display: flex; justify-content: center;">
-              <form >
-                  <label>Provider Id:</label>
-                  <input style= "display: block; width: 300px;" id="getBillProviderId" type=text>
-                  <label>*From:</label>
-                  <input style= "display: block; width: 300px;" id="getBillFrom" type=text>
-                  <label>*To:</label>
-                  <input style= "display: block; width: 300px;" id="getBillTo" type=text>
-                  <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=getBill()>Get Provider Bill</button>
-                </div>
-              </form>
+    <div style="height: 400; display: flex; flex-direction: column; justify-content: center" class="card">
+      <h3 style="text-align: center;">Post Truck:</h1>
+        <div style="display: flex; justify-content: center; ">
+          <form >
+              <label>Truck Id:</label>
+              <input style= "display: block; width: 300px;" id="truckIdInput" type=text>
+              <label >Provider Id:</label>
+              <input style= "display: block; width: 300px;" id="providerIdInput" type=text>
+              <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=postTruck()>Register Truck</button>
             </div>
-
-            <h3 style="text-align: center;">Get Health:</h1>
-              <div style="display: flex; justify-content: center;">
-                <form >
-                    <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=getHealth()>Get Health</button>
-                  </div>
-                </form>
-              </div>
+          </form>
+        </div>
+    </div>
+   
+    <div style="height: 400; display: flex; flex-direction: column; justify-content: center" class="card">
+      <h3 style="text-align: center;">Put Truck:</h1>
+        <div style="display: flex; justify-content: center; ">
+          <form >
+              <label>Truck Id:</label>
+              <input style= "display: block; width: 300px;" id="putTruckIdInput" type=text>
+              <label >Provider Id:</label>
+              <input style= "display: block; width: 300px;" id="putTruckProviderIn" type=text>
+              <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=putTruck()>Register Truck to Provider</button>
+            </div>
+          </form>
+        </div>
+    </div>
+    <div style="height: 400; display: flex; flex-direction: column; justify-content: center" class="card">
+      <h3 style="text-align: center;">Get Bill:</h1>
+        <div style="display: flex; justify-content: center;">
+          <form >
+              <label>Provider Id:</label>
+              <input style= "display: block; width: 300px;" id="getBillProviderId" type=text>
+              <label>*From:</label>
+              <input style= "display: block; width: 300px;" id="getBillFrom" type=text>
+              <label>*To:</label>
+              <input style= "display: block; width: 300px;" id="getBillTo" type=text>
+              <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=getBill()>Get Provider Bill</button>
+            </div>
+          </form>
+        </div>
+    </div>
+    <div style="height: 400; display: flex; flex-direction: column; justify-content: center" class="card">
+      <h3 style="text-align: center;">Get Health:</h1>
+        <div style="display: flex; justify-content: center;">
+          <form >
+              <button type="button" class="btn btn-primary" style= "display: block; width: 300px;" onclick=getHealth()>Get Health</button>
+            </div>
+          </form>
+        </div>
+    </div>
     </body>
   </body>
   

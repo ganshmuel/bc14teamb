@@ -258,7 +258,8 @@ class Bill(Resource):
                 "from": f"{startDate}",
                 "to": f"{endDate}", 
                 "truckCount": numTrucks,
-                "sessionCount": numSessions
+                "sessionCount": numSessions,
+                "products":[],
                 }, 200
             else:
                 return {"message":f"Provider with id: {provider_id} has no recorded trucks"}, 400
