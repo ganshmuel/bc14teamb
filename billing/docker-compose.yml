@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   app:
-    container_name: ${APP_NAME}
+    container_name: "${APP_NAME:-billing_app}"
     platform: linux/amd64
     build: .
     ports:
@@ -11,9 +11,9 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./in/:/home/app_user/in
+      - "${PATH_APP}/in/:/home/app_user/in"
   db:
-    container_name: ${DB_NAME}
+    container_name: "${DB_NAME:-billing_db}"
     platform: linux/amd64
     image: mysql:8
     environment:
@@ -22,7 +22,7 @@ services:
       MYSQL_USER: billdb_owner
       MYSQL_PASSWORD: password
     volumes:
-      - ./db:/docker-entrypoint-initdb.d/
+      - "${PATH_APP}/db:/docker-entrypoint-initdb.d/"
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
