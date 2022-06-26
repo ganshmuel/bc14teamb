@@ -1,12 +1,5 @@
-How to run the tests
+How to run the tests from bc14teamb directory
 ====================
+1. chmod +x  billing/tests/run_test.sh
+2  /billing/tests/./run_test
 
-1. edit 'host' on row #5
-2. give execute permissions to the script
-3. start the containers
-4. give the 'in' folder on the host the necessary permissions:
-
-sudo chmod 777 in/
-
-5. Upload "tests\POST_rates_test.xlsx" to the in\ folder
-6. Run tests\checks.sh

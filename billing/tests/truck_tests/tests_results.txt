@@ -1,10 +1,10 @@
-Success - Post {'id': 'zjowpevu', 'provider_id': '10190'} to Trucks
+Success - Post {'id': 'qhnprwhw', 'provider_id': '10311'} to Trucks
 200
-Failure. Try post {'id': 'zjowpevu', 'provider_id': '10190'} second time to Trucks
+Failure. Try post {'id': 'qhnprwhw', 'provider_id': '10311'} second time to Trucks
 400
 Failure - Try add {'id': '5001', 'provider_id': '100000'}  with provider which doesn't exist
 400
-Failure - Try add {'id': '45484884888885555', 'provider_id': '10190'}  with truck_id that is too long
+Failure - Try add {'id': '45484884888885555', 'provider_id': '10311'}  with truck_id that is too long
 400
-Failure - Try add {'id': '', 'provider_id': '10190'}  with empty id
+Failure - Try add {'id': '', 'provider_id': '10311'}  with empty id
 400

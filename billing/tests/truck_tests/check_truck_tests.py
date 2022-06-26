@@ -1,6 +1,6 @@
 #------------- Compare output to expected output ----------
 def main():
-    test_file = open('truck_tests/tests_results.txt')
+    test_file = open('billing/tests/truck_tests/tests_results.txt')
     while True:
         line1 = test_file.readline()
         if not line1:

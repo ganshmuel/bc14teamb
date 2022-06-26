@@ -82,10 +82,10 @@ echo "TEST: POST /truck, positive test"
 #response_code="$(create_truck $truck_id)"
 
 #Run tests with for different input(see result in)
-(python3 truck_tests/run_truck_tests.py) > truck_tests/tests_results.txt
+(python3 billing/tests/truck_tests/run_truck_tests.py) > billing/tests/truck_tests/tests_results.txt
 #Compare results with expected values
-(python3 truck_tests/check_truck_tests.py) > truck_tests/result.txt
-response_code=`cat truck_tests/result.txt`
+(python3 billing/tests/truck_tests/check_truck_tests.py) > billing/tests/truck_tests/result.txt
+response_code=`cat billing/tests/truck_tests/result.txt`
 # Validate result
 check_response_code "200" "${response_code}"
 
@@ -96,10 +96,10 @@ check_response_code "200" "${response_code}"
 echo "TEST: GET / BILL, positive test"
 
 
-(python3 bill_tests/run_bill_tests.py) > bill_tests/bill_results.txt
+(python3 billing/tests/bill_tests/run_bill_tests.py) > billing/tests/bill_tests/bill_results.txt
 #Compare results with expected values
-(python3 bill_tests/check_bill_tests.py) > bill_tests/result.txt
-response_code=`cat bill_tests/result.txt`
+(python3 billing/tests/bill_tests/check_bill_tests.py) > billing/tests/bill_tests/result.txt
+response_code=`cat billing/tests/bill_tests/result.txt`
 # Validate result
 check_response_code "200" "${response_code}"
 
@@ -151,26 +151,26 @@ check_response_code "200" "${response_code}"
 
 # ----------- PUT /trucks/<truck_id> -----------
 
-echo "TEST: PUT /trucks/<truck_id>, positive test"
-
-# Create truck
-
-# Generate a random truck's license plate
-truck_id="$RANDOM"
-# Create provider and truck
-# Create new provider
-provider_id=$(create_provider)
-response_code="$(create_truck $provider_id $truck_id)"
-# Validate result
-check_response_code "200" "${response_code}"
+#echo "TEST: PUT /trucks/<truck_id>, positive test"
+#
+## Create truck
+#
+## Generate a random truck's license plate
+#truck_id="$RANDOM"
+## Create provider and truck
+## Create new provider
+#provider_id=$(create_provider)
+#response_code="$(create_truck $provider_id $truck_id)"
+## Validate result
+#check_response_code "200" "${response_code}"
 
 
 
 
 # ----------- POST /rates -----------
 
-echo "TEST: POST /rates, positive test"
-
+#echo "TEST: POST /rates, positive test"
+#
 filename="POST_rates_test"
 url="http://$host:$port/rates"
 payload="$(jq --null-input --arg nm "$filename" '{"file": $nm}')"
@@ -200,4 +200,3 @@ check_response_code "200" "${response_code}"
 
 
 check_response_code 0 $?
-
