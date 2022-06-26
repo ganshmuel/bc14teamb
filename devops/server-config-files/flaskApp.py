@@ -29,12 +29,15 @@ def startTests(branchName):
     if not exists(f"{testFolder}/run_test.sh"):
         cleanTestEnv()
         return f"{testFolder}/run_test.sh not found"
-    
-    subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
-    time.sleep(10)
-    subprocess.run([f"{testFolder}/run_test.sh", ip]) 
-    if not exists(f"./log-test.txt"):
+    try:
+        subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
+        time.sleep(10)
+        subprocess.run([f"{testFolder}/run_test.sh", ip]) 
+    except:
         cleanTestEnv()
+        return "something went wrong with run_test.sh"
+    if not exists(f"./log-test.txt"):
+        
         return f"./log-test.txt ---- not exist"
     
     with open(f"./log-test.txt") as logFile:
