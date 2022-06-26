@@ -21,7 +21,7 @@
     <br>
     <hr>
     <div class="card">
-        <h4>Registration Form</h4>
+        <h4>Post Weight</h4>
         <form action="/weight" method="POST">
 
             <label for="force">Force</label><br>
@@ -38,17 +38,14 @@
             <label for="containers">Container's ID</label><br>
             <input type="text" name="containers" placeholder="Enter container's ID"><br><br>
 
-            <label for="bruto">Bruto Weight</label><br>
-            <input type="number" name="bruto" placeholder="Enter bruto Here"><br>
+            <label for="weight">Weight</label><br>
+            <input type="number" name="weight" placeholder="Enter weight Here"><br>
             <small>Bruto = Neto (fruit) + Tara (truck) + sum(Tara(Containers))</small><br><br>
 
-            <label for="truckTara">Truck's Tara</label><br>
-            <input type="number" name="truckTara" placeholder="Enter track's tara here"><br>
-            <small>Tara = Only the truck's weight(without the fruits or the container) </small><br><br>
+            <label for="unit">Unit</label><br>
+            <input type="text" name="unit" placeholder="Enter unit here"><br>
+            <small>kg or lbs </small><br><br>
 
-            <label for="neto">Neto Weight</label><br>
-            <input type="number" name="neto" placeholder="Enter neto weight here"><br>
-            <small>Neto = Only the fruit's weight in kg </small><br><br>
 
             <label for="produce">Produce Type</label><br>
             <input type="text" name="produce" placeholder="Enter produce type here"><br>

@@ -12,7 +12,6 @@ mydb = mysql.connector.connect(  # db configuration
     database="weight"
 )
 
-
 @app.route('/health')
 def get_health():
     return Response("OK", status=200, mimetype="text")
@@ -97,10 +96,10 @@ def post_weight():
         else: #calculate truckTara
             truckTara = weight
        ############################# get bruto from DB , neto = bruto - truckTara - contsum
-        mycursor.execute("SELECT bruto FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
-        bruto = mycursor.fetchone()      ###record = mycursor.fetchone()
-        if bruto is not None and bruto[0] is not None:
-            bruto = bruto[0]
+        # mycursor.execute("SELECT bruto FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+        # bruto = mycursor.fetchone()      ###record = mycursor.fetchone()
+        # if bruto is not None and bruto[0] is not None:
+        #     bruto = bruto[0]
         mycursor.execute("SELECT id FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
         id = mycursor.fetchone()
         if id is not None and id[0] is not None:
@@ -119,12 +118,22 @@ def post_weight():
                     if record[1]=="lbs" :
                         cont_weight*=0.45
                     contsum = int(contsum + cont_weight)
-        neto = float(bruto) - int(truckTara) - int(contsum)
+        
+                #######neto = float(bruto) - int(truckTara) - int(contsum)
         if direction_check == direction:
             if force == ("False" or "false"):
                 #if force=false will generate an error
                 return Response("Error", status=404, mimetype="text")
             elif force == ("true" or "True"):#will over-write db
+                mycursor.execute("SELECT bruto FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+                bruto = mycursor.fetchone()      ###record = mycursor.fetchone()
+                if bruto is not None and bruto[0] is not None:
+                    bruto = bruto[0]
+                try:
+                    neto = float(bruto) - int(truckTara) - int(contsum)
+                except:
+                    #"out" without an "in" will generate error
+                    return Response("Error out without in", status=404, mimetype="text")
                 mycursor.execute("SELECT id FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
                 id = mycursor.fetchone()
                 if id is not None and id[0] is not None:
@@ -146,7 +155,7 @@ def post_weight():
                 return results_toload
         if direction_check != "in":
                 #"out" without an "in" will generate error
-                return Response(f"Error out without in {direction_check}", status=404, mimetype="text")
+                return Response("Error out without in", status=404, mimetype="text")
         mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce, neto, truckTara ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                         (date, direction, truck, containers, weight, produce,neto , truckTara ))
         #######mydb.commit        

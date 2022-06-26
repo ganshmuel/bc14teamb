@@ -4,7 +4,7 @@ post_curl="curl -I -X POST "http://localhost:8081/batch-weight?file=containers1.
 get_curl="curl -s -I "localhost:8081"/health | grep HTTP/ | awk {'print '}"
 result="true"
 
-declare -a get_routes=("health" "weight" "unknown/" "item/87/")  # an array of the working api's
+declare -a get_routes=("health" "weight" "unknown/" "item/87/" "session/10001")  # an array of the working api's
 declare -a post_routes=("batch-weight?file=containers1.csv")
 
 
@@ -42,15 +42,5 @@ echo -e "${result}$(cat log-test.txt)" > log-test.txt
 
 
 # curl -I -X POST "http://localhost:8081/batch-weight?file=containers1.csv" 2>&1 | grep -i http|tail -n1
-
-# curl --location --request POST 'localhost:8081/weight' \
-# --form 'direction="out"' \
-# --form 'truck="truckTest1"' \
-# --form 'containers="T-14409"' \
-# --form 'weight="20003"' \
-# --form 'produce="tutim"' \
-# --form 'force="true"' \
-# --form 'unit="kg"'
-
 
 
