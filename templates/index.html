@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Devops Dashboard</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+        
+       
+    </head>
+    <body>
+    
+        <nav class="navbar sticky-top navbar-dark bg-primary">
+            <span class="navbar-text">
+                <h5>Gan Shmuel Devops Dashboard</h5>
+            </span>
+        </nav>
+        <div id="server-condition" class="container  bg-secondary">
+            <div class="row justify-content-around mt-4">
+                <div id="ci-server-panel" class="col-3 bg-primary">
+                    <div>
+                        <h3 class="text-center">ci-server</h3>
+                    </div>
+                    <div class="bg-success">
+                        <div style="display:inline-block">server status:</div>
+                        <div style="width:10px;height:10px;background-color:red;border-radius:50%; display:inline-block; margin-left: 10px;"></div>
+                    </div>
+                    <div class="row mt-2">
+                        <button id="ciBtn" class="btn btn-info">test server</button>
+                    </div>
+                </div>
+
+                <div id="billing-server-panel" class="col-3 bg-primary">
+                    <div>
+                        <h3 class="text-center">billing-server</h3>
+                    </div>
+                    <div class="bg-success">
+                        server status
+                    </div>
+                    <div class="row mt-2">
+                        <button id="billingBtn" class="btn btn-info">test server</button>
+                    </div>
+                </div>
+
+                <div id="weight-server-panel" class="col-3 bg-primary">
+                    <div class="bg-success">
+                        <h3 class="text-center">weight-server</h3>
+                    </div>
+                    <div class="bg-success">
+                        server status
+                    </div>
+                    <div class="row mt-2">
+                        <button id="weightbtn" class="btn btn-info">test server</button>
+                    </div>
+                </div>
+                
+            </div>
+            <div id="test-panel" class="row">
+
+            </div>
+            <div id="test-graph" class="row"></div>
+        </div>
+        <script >
+            let checkCiBtn = document.getElementById("ciBtn")
+            let checkWeightBtn = document.getElementById("weightBtn")
+            let checkBillingBtn = document.getElementById("billingBtn")
+            checkCiBtn.addEventListener("click", ()=> checkStatus())
+            function checkStatus(){
+                let finish = false;
+                setTimeout(function(){
+                    console.log("work")
+                    fetch("http://localhost:8090/checkStatus")
+                    finish = true
+                }, 200)
+                clearInterval()
+                
+
+            }
+        </script>
+    </body>
+</html>

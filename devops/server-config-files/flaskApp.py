@@ -1,6 +1,6 @@
 from plistlib import load
 from re import sub
-from flask import Flask , request, json
+from flask import Flask, render_template , request, json
 import subprocess
 import time
 from Scripts import mailing
@@ -70,10 +70,13 @@ def test():
     
     #mailing.sendMail(commmiterMail, "msg")
     return stValue 
+@app.route("/checkStatus")
+def checkStatus():
+    return "ok"
 
-@app.route("/somthing")
-def somthing():
-    return "ok"    
+@app.route("/dashboard")
+def dashboard():
+    return  render_template("index.html")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
