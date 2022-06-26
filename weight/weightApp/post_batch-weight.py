@@ -25,9 +25,12 @@ def post_batch():
             for line in reader:
                 dict_list.append({'container_id':line[0],'weight':line[1],'unit':unit})
         for item in dict_list:
-            cursor.execute("insert into containers_registered(container_id, weight, unit) values(%s, %s, %s)", (item['container_id'], item['weight'], item['unit']))
-            mydb.commit
-        return "OK"
+            try:
+                cursor.execute("insert into containers_registered(container_id, weight, unit) values(%s, %s, %s)", (item['container_id'], item['weight'], item['unit']))
+                mydb.commit
+            except:
+                return "Duplicate entry"
+            return "OK"
     elif file.endswith('.json'):
         json_data=open(file).read()
         json_obj = json.loads(json_data)
@@ -36,4 +39,4 @@ def post_batch():
             mydb.commit
         return "json OK"
     else:
-        return Response("Not Found", status=404, mimetype="text")
+        return Response("ID NOT FOUND", status=404, mimetype="text")

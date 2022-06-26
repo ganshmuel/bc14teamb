@@ -1,9 +1,7 @@
-import sqlite3 as sql
 from flask import Flask, render_template, Response, jsonify, request
 import mysql
 import mysql.connector
-import datetime , csv , os , json
-from mysql.connector import FieldType
+import datetime , csv , json
 import show_tables
 
 app = Flask(__name__,)
@@ -14,60 +12,161 @@ mydb = mysql.connector.connect(  # db configuration
     database="weight"
 )
 
+
 @app.route('/health')
 def get_health():
     return Response("OK", status=200, mimetype="text")
 
-
 @app.route('/', methods=['GET'])
 def get_index():
     return render_template('index.html')
-
 
 @app.route('/weight', methods=['POST'])
 def post_weight():
     direction = str(request.form['direction'])
     truck = str(request.form['truck'])
     containers = str(request.form['containers'])    
-    bruto = int(request.form['bruto'])
+    weight = int(request.form['weight'])
+    unit = str(request.form['unit'])
     produce = str(request.form['produce'])
-    force = bool(request.form['force'])
-    neto = int(request.form['neto'])
-    truckTara = int(request.form['truckTara'])
+    force = str(request.form['force'])
     date = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    if unit == "lbs":
+        weight = weight*0.45
     mycursor = mydb.cursor()
-    if direction == ("in" or "none"):
-        direction_check = mycursor.execute("SELECT direction WHERE truck = (%s) ORDER BY id DESC LIMIT 1", (truck))
-        id = mycursor.execute("SELECT id WHERE truck = (%s) ORDER BY id DESC LIMIT 1", (truck))
-        if direction_check == direction:
-            if force == "False":
+    mycursor.execute("SELECT direction FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+    direction_check = mycursor.fetchone()
+    if direction_check is not None and direction_check[0] is not None:
+        direction_check = direction_check[0]
+    if direction == "in" or direction == "none":
+        bruto = weight
+        mycursor.execute("SELECT id FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+        id = mycursor.fetchone()
+        if id is not None and id[0] is not None:
+            id = id[0]
+        if direction_check == "in" and direction == "in":
+            if force == "false":
                 #if force=false will generate an error
-                return Response("Error", status=404, mimetype="text")
-            elif force == "True":
+                return Response("Error duplicate entry (maybe use force=True)", status=404, mimetype="text")
+            elif force == "true":
                 #will over-write db
-                mycursor.execute("UPDATE transactions SET bruto = %s WHERE id = %s" , (bruto , id))
+                mycursor.execute("UPDATE transactions SET bruto = '%s' WHERE id = '%s'" , (bruto , id))
+                mycursor.execute("SELECT * FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+                myresult = mycursor.fetchall()
+                json_data=[]
+                for result in myresult:
+                    d=dict()
+                    d['id']=result[0]
+                    d['truck']=result[3]
+                    d['bruto']=result[5]
+                    json_data.append(d)
+                results_toload = []
+                results_toload = jsonify(json_data)
+                return results_toload
+            else:
+                return Response("Unknown value of 'force'", status=404, mimetype="text")
         elif direction == "none" and direction_check == "in":
             #"none" after "in" will generate error
-            return Response("Error", status=404, mimetype="text")
-        mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce) VALUES (%s, %s, %s, %s, %s, %s)",
-                        (date, direction, truck, containers, bruto, produce))
-        mydb.commit
+            return Response("Error none after in ", status=404, mimetype="text")
+        else:
+            mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce) VALUES (%s, %s, %s, %s, %s, %s)", (date, direction, truck, containers, bruto, produce))
+            mycursor.execute("SELECT * FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+            myresult = mycursor.fetchall()
+            json_data=[]
+            for result in myresult:
+                d=dict()
+                d['id']=result[0]
+                d['truck']=result[3]
+                d['bruto']=result[5]
+                json_data.append(d)
+            results_toload = []
+            results_toload = jsonify(json_data)
+            return results_toload
     elif direction == "out":
+        contsum = 0
+        if containers:#  calculate truckTara
+            contlist = containers.split(",")
+            
+            for c in contlist: # calculate containers tara weight
+                mycursor.execute("SELECT weight FROM containers_registered WHERE container_id = '%s'" % (c))
+                contweight = mycursor.fetchone()
+                if contweight is not None and contweight[0] is not None:
+                    contweight = int(contweight[0])
+                    contsum = contsum + contweight
+            truckTara = weight - contsum
+        else: #calculate truckTara
+            truckTara = weight
+       ############################# get bruto from DB , neto = bruto - truckTara - contsum
+        mycursor.execute("SELECT bruto FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+        bruto = mycursor.fetchone()      ###record = mycursor.fetchone()
+        if bruto is not None and bruto[0] is not None:
+            bruto = bruto[0]
+        mycursor.execute("SELECT id FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+        id = mycursor.fetchone()
+        if id is not None and id[0] is not None:
+            id = id[0]
+        ##### DONT FORGET TO IMPLEMENT CALCULATIONS FOR CONTAINERS IN PREVIOUS IN FOR NETO IN  OUT
+        mycursor.execute("SELECT containers FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+        contnrs = mycursor.fetchone()
+        if contnrs is not None and contnrs[0] is not None:
+            contnrs = contnrs[0]
+            contlist = contnrs.split(",")
+        for c in contlist: # calculate containers tara weight
+                mycursor.execute("SELECT weight,unit FROM containers_registered WHERE container_id = '%s'" % (c))
+                record = mycursor.fetchone()
+                if record:
+                    cont_weight=record[0] 
+                    if record[1]=="lbs" :
+                        cont_weight*=0.45
+                    contsum = int(contsum + cont_weight)
+        neto = float(bruto) - int(truckTara) - int(contsum)
         if direction_check == direction:
-            if force == "False":
+            if force == ("False" or "false"):
                 #if force=false will generate an error
                 return Response("Error", status=404, mimetype="text")
-            elif force == "True":
-                #will over-write db
-                mycursor.execute("UPDATE transactions SET bruto = %s , neto = %s , truckTara = %s WHERE id = %s" , (bruto , neto , truckTara , id))
+            elif force == ("true" or "True"):#will over-write db
+                mycursor.execute("SELECT id FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+                id = mycursor.fetchone()
+                if id is not None and id[0] is not None:
+                    id = id[0]
+                mycursor.execute("UPDATE transactions SET bruto='%s' , neto='%s' , truckTara='%s' WHERE id = (%s)" , (weight , neto , truckTara , id))
+                mycursor.execute("SELECT * FROM transactions WHERE truck = '%s' ORDER BY id DESC LIMIT 1" % (truck))
+                myresult = mycursor.fetchall()
+                json_data=[]
+                for result in myresult:
+                    d=dict()
+                    d['id']=result[0]
+                    d['truck']=result[3]
+                    d['bruto']=result[5]
+                    d['truckTara']=result[6]
+                    d['neto']=result[7]
+                    json_data.append(d)
+                results_toload = []
+                results_toload = jsonify(json_data)
+                return results_toload
         if direction_check != "in":
                 #"out" without an "in" will generate error
-                return Response("Error", status=404, mimetype="text")
+                return Response(f"Error out without in {direction_check}", status=404, mimetype="text")
         mycursor.execute("INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce, neto, truckTara ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                        (date, direction, truck, containers, bruto, produce,neto , truckTara ))
+                        (date, direction, truck, containers, weight, produce,neto , truckTara ))
+        #######mydb.commit        
+        last_insert = mycursor.lastrowid
+        mycursor.execute("SELECT * FROM transactions WHERE id = '%s'", (last_insert))
+        myresult = mycursor.fetchall()
+        json_data=[]
+        for result in myresult:
+            d=dict()
+            d['id']=result[0]
+            d['truck']=result[3]
+            d['bruto']=result[5]
+            d['truckTara']=result[6]
+            d['neto']=result[7]
+            json_data.append(d)
+        results_toload = []
+        results_toload = jsonify(json_data)
+        return results_toload
     else:
-        return Response("Error", status=404, mimetype="text")
-
+        return Response(f"Unknown Error", status=404, mimetype="text")
 
 @app.route('/weight', methods=['GET'])
 def get_weight():
@@ -83,7 +182,7 @@ def get_weight():
     fltr = filter.split(",")
     where_in = ','.join(['%s'] * len(fltr))
     mycursor = mydb.cursor()  # Connecting to database and getting cursor
-    mycursor.execute("use weight")  
+    mycursor.execute("use weight")
     # SELECT * FROM transactions WHERE datetime >= 2022063000000 AND datetime <= 20220630123456 and direction in ('in','out','none');
     sql = ("SELECT * FROM transactions WHERE datetime >= (%s) AND datetime <= (%s) AND direction IN (%s) " %
            (frm, to, where_in))
@@ -121,9 +220,12 @@ def post_batch():
             for line in reader:
                 dict_list.append({'container_id':line[0],'weight':line[1],'unit':unit})
         for item in dict_list:
-            cursor.execute("insert into containers_registered(container_id, weight, unit) values(%s, %s, %s)", (item['container_id'], item['weight'], item['unit']))
-            mydb.commit
-        return "OK"
+            try:
+                cursor.execute("insert into containers_registered(container_id, weight, unit) values(%s, %s, %s)", (item['container_id'], item['weight'], item['unit']))
+                mydb.commit
+            except:
+                return "Duplicate entry"
+            return "OK"
     elif file.endswith('.json'):
         json_data=open(file).read()
         json_obj = json.loads(json_data)
@@ -134,81 +236,70 @@ def post_batch():
     else:
         return Response("Not Found", status=404, mimetype="text")
 
-  
-
 @app.route('/session/<id>', methods=['GET'])
 def get_session(id):
-    cursor = mydb.cursor()
-    cursor.execute("use weight")
-    cursor.execute("SELECT direction FROM transactions WHERE id = (%s)" % (id))
-    record = cursor.fetchone()
-    direction=str(record[0])
-    if direction == "in":
-        cursor.execute("SELECT id,truck,bruto FROM transactions WHERE id = (%s)" % (id))
-        record = cursor.fetchall()
-        json_data=[]
-        for result in record:
-            d=dict()
-            d['id']=result[0]
-            d['truck']=result[1]
-            d['bruto']=result[2]
-            # d['truckTara']=result[6]
-            # d['neto']=result[7]
-            # d['produce']=result[8]
-            json_data.append(d)
-        results_toload = []
-        results_toload = jsonify(json_data)
-        return results_toload          
-    elif direction == "out":
-        cursor.execute("SELECT id,truck,bruto,truckTara,neto,produce FROM transactions WHERE id = (%s)" % (id))
-        record = cursor.fetchall()
-        json_data=[]
-        for result in record:
-            d=dict()
-            d['id']=result[0]
-            d['truck']=result[1]
-            d['bruto']=result[2]
-            d['truckTara']=result[3]
-            d['neto']=result[4]
-            json_data.append(d)
-        results_toload = []
-        results_toload = jsonify(json_data)
-        return results_toload    
-    else:
-        return Response("Not Found", status=404, mimetype="text")
+        cursor = mydb.cursor()
+        cursor.execute("use weight")
+        try:
+            cursor.execute("SELECT direction FROM transactions WHERE id = (%s)" % (id))
+            record = cursor.fetchone()
+            direction=str(record[0])
+            if direction == "in":
+                cursor.execute("SELECT id,truck,bruto FROM transactions WHERE id = (%s)" % (id))
+                record = cursor.fetchall()
+                json_data=[]
+                for result in record:
+                    d=dict()
+                    d['id']=result[0]
+                    d['truck']=result[1]
+                    d['bruto']=result[2]
+                    json_data.append(d)
+                results_toload = []
+                results_toload = jsonify(json_data)
+                return results_toload          
+            elif direction == "out":
+                cursor.execute("SELECT id,truck,bruto,truckTara,neto,produce FROM transactions WHERE id = (%s)" % (id))
+                record = cursor.fetchall()
+                json_data=[]
+                for result in record:
+                    d=dict()
+                    d['id']=result[0]
+                    d['truck']=result[1]
+                    d['bruto']=result[2]
+                    d['truckTara']=result[3]
+                    d['neto']=result[4]
+                    json_data.append(d)
+                results_toload = []
+                results_toload = jsonify(json_data)
+                return results_toload    
+            else:
+                return Response("direction unkown ", status=404, mimetype="text")
+        except:
+            return Response("id unkown", status=404, mimetype="text")
 
 @app.route('/unknown/', methods=['GET'])
 def unknown_containers():
     mycursor = mydb.cursor()
     mycursor.execute("SELECT container_id FROM containers_registered WHERE weight IS NULL")
     x = mycursor.fetchall()
-    y = ''.join(''.join(tup) for tup in x)
+    y = ', '.join(''.join(tup) for tup in x)
     return y
-
-
 
 @app.route('/item/<id>/', methods=['GET'])
 def item(id):
-    #   id = request.args.get('id')
-      t1 = request.args.get('t1')
-      t2 = request.args.get('t2')
+      t1 = request.args.get('from')
+      t2 = request.args.get('to')
       b=item1(id, t1, t2) 
       if b=="id not exist - should be 404 error " :
         return Response("Error", status=404, mimetype="text")
       json_object = json.dumps(b, indent = 4) 
-    #   print("\n\ntype of returned object")
-    #   print(type(json_object))
       return  (json_object)
 
-
 def item1(id, t1, t2):
-    #   id = request.args.get('id')
-    #   t1 = request.args.get('t1')
-    #   t2 = request.args.get('t2')
       print("\n\n t1 is %s  and t2 is %s"  %(t1,t2) )
 
-      if  not t1   : t1=datetime.now().strftime("%Y%m01000000")
-      if  not t2   : t2=datetime.now().strftime("%Y%m%d%H%M%S")
+      if  not t1   : t1=datetime.datetime.now().strftime("%Y%m01000000")
+      if  not t2   : t2=datetime.datetime.now().strftime("%Y%m%d%H%M%S")
       cursor = mydb.cursor()
       print("\n\n t1 is %s  and t2 is %s"  %(t1,t2) )
       query="select  id,truckTara,truck ,datetime FROM transactions where truck=(%s) "
@@ -217,7 +308,6 @@ def item1(id, t1, t2):
       firstresult=cursor.fetchall()    #first result is type list
       
       last_tara_time="0"
-
 
       if firstresult:
         print("first result is %s" %firstresult)
@@ -234,10 +324,26 @@ def item1(id, t1, t2):
         if not tr_tara: tr_tara="na"
            
         return({"id":id ,"tara":tr_tara,"sessions":truck_sessions })
+
 ###############################################################################################      
       #next  blocks will  search id at containers field if id was not a truck id .
 
       # query="select id,containers  FROM transactions WHERE datetime > (%s) AND datetime < (%s)" 
+      def get_cont_weight(id1):
+                 query="select weight,unit  FROM containers_registered where container_id=%s"   # search id at containers
+                 cursor.execute(query,(id1,))
+                 cont_tara=cursor.fetchall()
+                 print ("\n\ncont tara is %s" %cont_tara)
+                 if not cont_tara : return "404" 
+                 if cont_tara[0][0] and cont_tara[0][1]:
+                       cont_weight=cont_tara[0][0]
+                       if cont_tara[0][1]=="lbs" :
+                         cont_weight*=0.453
+                         cont_weight=int(cont_weight)                      
+
+                 else:cont_weight="na"
+                 return cont_weight
+
       query="select id,containers,datetime  FROM transactions "   
   
       cursor.execute(query,)
@@ -252,44 +358,18 @@ def item1(id, t1, t2):
               if (i[2]>t1) and i[2]<t2 :
                  cont_sessions.append(i[0])
               cont_exist=True
-      # print("cont sessin is: %s" %cont_sessions)
-      if cont_exist==True:
-          # get container weight
-        query="select weight,unit  FROM containers_registered where container_id=%s"   # search id at containers
-        cursor.execute(query,(id,))
-        cont_tara=cursor.fetchall()
-        if cont_tara:
-            cont_weight=cont_tara[0][0] 
-            if cont_tara[0][1]=="lbs" :
-              cont_weight*=0.453
-              cont_weight=int(cont_weight)
-        else: cont_weight="na"
+      
+      cont_weight=get_cont_weight(id)
+      if cont_weight!="404":
+          return ({'id':str(id) , 'tara':cont_weight ,'sessions':cont_sessions })
 
-      #################################################
-
-      if cont_exist==False:   # next block exec if containers is not on session but is on containers_registers  table
-           query="select weight,unit  FROM containers_registered where container_id=%s"   # search id at containers
-           cursor.execute(query,(id,))
-           cont_tara=cursor.fetchall()
-           if cont_tara:
-              cont_weight=cont_tara[0][0] 
-              if cont_tara[0][1]=="lbs" :
-                cont_weight*=0.453
-                cont_weight=int(cont_weight)
-              else: cont_weight="na"
-              return ({'id':str(id) , 'tara':cont_weight ,'sessions':[] })
-           return "id not exist - should be 404 error "
-      else:
-         return ({'id':str(id) , 'tara':cont_weight ,'sessions':cont_sessions })
-
+      return "id not exist - should be 404 error "
 
 @app.route('/st')
 def st():
    c=show_tables.first_table()
    d=show_tables.second_table()
    return render_template('tables.html',c=c, gg=d )
-
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port='8081')

@@ -9,17 +9,29 @@ import mysql
 import mysql.connector
 from datetime import datetime
 
-def item():
-      mydb = mysql.connector.connect(  # db configuration
-      host="db",
-      user="root",
-      password="root",
-        database="weight",
-        port= 3306,
-      )
+
+app = Flask(__name__,)
+mydb = mysql.connector.connect(  # db configuration
+    host="db",
+    user="root",
+    password="root",
+    database="weight"
+)
+
+
+@app.route('/item/<id>/', methods=['GET'])
+def item(id):
       id = request.args.get('id')
-      t1 = request.args.get('t1')
-      t2 = request.args.get('t2')
+      t1 = request.args.get('from')
+      t2 = request.args.get('to')
+      b=item1(id, t1, t2) 
+      if b=="id not exist - should be 404 error " :
+        return Response("Error", status=404, mimetype="text")
+      json_object = json.dumps(b, indent = 4) 
+      return  (json_object)
+
+
+def item1(id, t1, t2):
       print("\n\n t1 is %s  and t2 is %s"  %(t1,t2) )
 
       if  not t1   : t1=datetime.now().strftime("%Y%m01000000")
@@ -96,6 +108,3 @@ def item():
            return "id not exist - should be 404 error "
       else:
          return ({'id':str(id) , 'tara':cont_weight ,'sessions':cont_sessions })
-
-
-
