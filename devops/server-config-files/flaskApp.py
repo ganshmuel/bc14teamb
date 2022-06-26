@@ -43,8 +43,10 @@ def startTests(branchName):
             loadPordEnv(branchName)
         else:
             msg = f"Push {branchName} Didn't Passed the tests\n\n"
+            cleanTestEnv()
         for line in res: 
                 msg+=f"{line}\n"
+        
         return msg
             
         
