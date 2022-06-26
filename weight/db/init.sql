@@ -58,13 +58,13 @@ INSERT INTO `transactions`
 ( "20220621115009", "IN", "54" , " 8,11",
  891 , 33 , 100 , "nuts");
 
-INSERT INTO `containers_registered` (`unit`, `container_id`, `weight`)  VALUES ( "kg", "C-1241232", "4564");
-INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "lbs", "C-12412");
-INSERT INTO `containers_registered` (`unit`, `container_id`, `weight`)  VALUES ( "lbs", "C-124d2", "214097");
-INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-124232");
-INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-1232");
-INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "lbs", "C-12432");
-INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-11232");
+INSERT INTO `containers_registered` (`unit`, `container_id`, `weight`)  VALUES ( "kg", "C-35434", "4564");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "lbs", "C-122");
+INSERT INTO `containers_registered` (`unit`, `container_id`, `weight`)  VALUES ( "lbs", "C-12d2", "214097");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-174");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-123");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "lbs", "C-12");
+INSERT INTO `containers_registered` (`unit`, `container_id`)  VALUES ( "kg", "C-1");
 
 
 -- show tables;

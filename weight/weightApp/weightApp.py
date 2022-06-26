@@ -233,8 +233,8 @@ def post_batch():
                 cursor.execute("insert into containers_registered(container_id, weight, unit) values(%s, %s, %s)", (item['container_id'], item['weight'], item['unit']))
                 mydb.commit
             except:
-                return "Duplicate entry"
-            return "OK"
+                continue
+        return "OK"
     elif file.endswith('.json'):
         json_data=open(file).read()
         json_obj = json.loads(json_data)
