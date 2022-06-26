@@ -1,2 +1,0 @@
-{'id': '10312', 'name': 'xsvubqnfxa', 'from': '2022-06-01 00:00:00', 'to': '2022-06-26 11:00:44', 'truckCount': 2, 'sessionCount': 6}
-{'id': '10312', 'name': 'xsvubqnfxa', 'from': '2022-06-01 00:00:00', 'to': '', 'truckCount': '2', 'sessionCount': '6', 'products': [], 'total': '0'}
