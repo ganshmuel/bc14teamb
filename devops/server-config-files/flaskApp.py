@@ -65,9 +65,10 @@ def test():
     loadTestEnv(branchName)
     stValue =startTests(branchName)
     mailing.sendMail(commiterMail, stValue)
+    cleanTestEnv()
     return stValue 
 
-@app.route("/checkStatus")
+@app.route("/health")
 def checkStatus():
     return "ok"
 
