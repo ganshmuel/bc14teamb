@@ -27,12 +27,14 @@ def startTests(branchName):
          
     testFolder= f"/test-env/bc14teamb/{branchName}/tests"
     if not exists(f"{testFolder}/run_test.sh"):
+        cleanTestEnv()
         return f"{testFolder}/run_test.sh not found"
     
     subprocess.call(f"chmod +x {testFolder}/run_test.sh", shell=True)
     time.sleep(10)
     subprocess.run([f"{testFolder}/run_test.sh", ip]) 
     if not exists(f"./log-test.txt"):
+        cleanTestEnv()
         return f"./log-test.txt ---- not exist"
     
     with open(f"./log-test.txt") as logFile:
@@ -65,7 +67,7 @@ def test():
     loadTestEnv(branchName)
     stValue =startTests(branchName)
     mailing.sendMail(commiterMail, stValue)
-    cleanTestEnv()
+    
     return stValue 
 
 @app.route("/health")
