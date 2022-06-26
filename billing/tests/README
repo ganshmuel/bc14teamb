@@ -1,5 +1,0 @@
-How to run the tests from bc14teamb directory
-====================
-1. chmod +x  billing/tests/run_test.sh
-2  /billing/tests/./run_test
-
