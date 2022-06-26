@@ -82,10 +82,10 @@ echo "TEST: POST /truck, positive test"
 #response_code="$(create_truck $truck_id)"
 
 #Run tests with for different input(see result in)
-(python3 billing/tests/truck_tests/run_truck_tests.py) > billing/tests/truck_tests/tests_results.txt
+(python3 ./truck_tests/run_truck_tests.py) > ./truck_tests/tests_results.txt
 #Compare results with expected values
-(python3 billing/tests/truck_tests/check_truck_tests.py) > billing/tests/truck_tests/result.txt
-response_code=`cat billing/tests/truck_tests/result.txt`
+(python3 ./truck_tests/check_truck_tests.py) > ./truck_tests/result.txt
+response_code=`cat ./truck_tests/result.txt`
 # Validate result
 check_response_code "200" "${response_code}"
 
@@ -96,10 +96,10 @@ check_response_code "200" "${response_code}"
 echo "TEST: GET / BILL, positive test"
 
 
-(python3 billing/tests/bill_tests/run_bill_tests.py) > billing/tests/bill_tests/bill_results.txt
+(python3 ./bill_tests/run_bill_tests.py) > ./bill_tests/bill_results.txt
 #Compare results with expected values
-(python3 billing/tests/bill_tests/check_bill_tests.py) > billing/tests/bill_tests/result.txt
-response_code=`cat billing/tests/bill_tests/result.txt`
+(python3 ./bill_tests/check_bill_tests.py) > ./bill_tests/result.txt
+response_code=`cat ./bill_tests/result.txt`
 # Validate result
 check_response_code "200" "${response_code}"
 

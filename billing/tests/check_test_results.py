@@ -1,4 +1,6 @@
-#------------- Compare output to expected output ----------
+#!/usr/bin/env python3
+
+
 def main():
     test_file = open('./billing/tests/test_results.txt')
     result = 'true'
